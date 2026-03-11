@@ -180,6 +180,75 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
 /* ── UTILS ── */
 .red{color:var(--red)}.grn{color:#2a7a2a}.bold{font-weight:700}.ital{font-style:italic}
 .hidden{display:none!important}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  body{background:var(--paper)}
+  #app{box-shadow:none}
+
+  /* Masthead */
+  .mh-meta{font-size:8px;flex-wrap:wrap;gap:2px}
+  .mh-title{font-size:32px}
+  .mh-sub{font-size:10px}
+  .mh-rule{font-size:8px;letter-spacing:.1em}
+
+  /* Nav — scrollable single row */
+  #nav{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  #nav::-webkit-scrollbar{display:none}
+  .nb{flex:0 0 auto;font-size:11px;padding:10px 10px;white-space:nowrap}
+
+  /* Briefing: stack all three columns */
+  #briefing-body{grid-template-columns:1fr;min-height:auto}
+  .col{border-right:none;border-bottom:1px solid var(--ink);padding:12px}
+  .col:last-child{border-bottom:none}
+
+  /* Setup */
+  #setup{padding:18px 16px}
+  .setup-intro{font-size:13px}
+  .form-row{grid-template-columns:1fr}
+  .align-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .ac{padding:8px 5px}
+  .ac-name{font-size:11px}
+  .ac-desc{font-size:8.5px}
+  .prev-grid{grid-template-columns:repeat(3,1fr)}
+  .prevbox{padding:8px}
+
+  /* Policy */
+  #pol-tab{padding:12px 14px}
+  .sr-row{flex-wrap:wrap;gap:4px}
+  .sr-row label{width:100%;font-size:12px}
+  .sr-row input[type=range]{width:100%;flex:none}
+  .sr-val{width:auto}
+
+  /* Cabinet — stack pools */
+  #cab-tab{padding:12px 14px}
+  .cab-layout{grid-template-columns:1fr}
+  .mp-grid{grid-template-columns:1fr}
+
+  /* Stats */
+  #stats-tab{padding:12px 14px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+
+  /* Event */
+  .ev-inner{padding:16px}
+  .ev-hl{font-size:22px}
+  .ev-article{font-size:13px}
+
+  /* Election / Game over */
+  .el-title{font-size:36px}
+  .seats-row{gap:20px}
+  .seat-num{font-size:48px}
+  .el-inner{padding:24px 16px}
+  .go-inner{padding:28px 16px}
+
+  /* Type scale */
+  .hl1{font-size:22px}
+  .hl2{font-size:15px}
+  .btext{font-size:12.5px}
+  .apn{font-size:34px}
+  .bigbtn{font-size:16px;padding:12px}
+  .tinput{font-size:16px} /* prevents iOS zoom */
+}
 </style>
 </head>
 <body>
@@ -952,7 +1021,7 @@ function selectSocialPol(key, optKey, el){
 
 /* ── CABINET TAB ── */
 function renderCabinetTab(){
-  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">`;
+  let html = `<div class="cab-layout">`;
 
   // Cabinet slots
   html += `<div><div class="sec-hdr">Cabinet Positions</div>`;
@@ -1069,7 +1138,7 @@ function renderStatsTab(){
   html += `</div>`;
 
   html += `<div style="margin-top:20px"><div class="sec-hdr">Policy Overview</div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:11.5px;margin-top:8px">`;
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;font-size:11.5px;margin-top:8px">`;
   const polItems=[
     ['Interest Rate',G.pol.ir+'%'],['Basic Income Tax',G.pol.itBasic+'%'],
     ['Higher Rate',G.pol.itHigher+'%'],['Corp Tax',G.pol.corp+'%'],
