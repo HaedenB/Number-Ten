@@ -643,9 +643,10 @@ function simulateMonth(){
   );
 
   // ── DEFICIT / DEBT ──
-  const spend = spendTotal * 1.2; // bn proxy
-  const newDeficit = rnd1(Math.max(-3, spend - rev * 0.6 + rand(-.2,.2)));
-  G.deficit = rnd1(G.deficit * 0.9 + newDeficit * 0.1);
+  // newDeficit ≈ 0 at default settings (100% spend, default taxes)
+  // Positive = deficit, negative = surplus
+  const newDeficit = rnd1(clamp((spendTotal - 100) * 0.04 - (rev - 100) * 0.025 + rand(-.25,.25), -4, 8));
+  G.deficit = rnd1(G.deficit * 0.85 + newDeficit * 0.15);
   G.debt = rnd1(clamp(G.debt + G.deficit/12, 0, 200));
 
   // ── INFLATION ──
@@ -677,7 +678,7 @@ function simulateMonth(){
   const inflMood = G.inflation < 3 ? 1 : (G.inflation > 5 ? -2 : 0);
   const unempMood = G.unemp < 4 ? 1 : (G.unemp > 6 ? -2 : 0);
 
-  // Apply social policy steady-state nudges
+  // Apply social policy steady-state nudges (increased from 0.05 to 0.25)
   applySocialPolicyEffects();
 
   // General economic mood
@@ -685,6 +686,21 @@ function simulateMonth(){
     const drift = rand(-1,1) + econMood*0.4 + inflMood*0.3 + unempMood*0.3;
     G.dem[k] = clamp(Math.round(G.dem[k] + drift), 5, 95);
   });
+
+  // ── DIRECT POLICY APPROVAL EFFECTS ──
+  // Tax rates and welfare spending affect demographics regardless of economic mood.
+  // These are monthly nudges so they accumulate meaningfully but can't exploit forever.
+  const taxPain   = clamp((pol.itBasic  - 20) * 0.06, -1.5, 2.5); // raising basic IT hurts wc/mc
+  const higherPain= clamp((pol.itHigher - 40) * 0.04, -1.0, 2.0); // higher rate hits mc hard
+  const corpPain  = clamp((pol.corp     - 25) * 0.05, -2.0, 2.0); // corp tax: high=biz unhappy
+  const welfGap   = clamp((18 - pol.welf)     * 0.10, -2.0, 3.5); // cutting welfare hurts poor
+  const nhsGap    = clamp((22 - pol.nhs)      * 0.06, -1.0, 2.0); // cutting NHS hurts everyone
+
+  G.dem.wc  = clamp(Math.round(G.dem.wc  - taxPain*0.9 - welfGap*1.2 - nhsGap*0.7), 5, 95);
+  G.dem.mc  = clamp(Math.round(G.dem.mc  - taxPain*0.6 - higherPain*0.8 - nhsGap*0.5), 5, 95);
+  G.dem.biz = clamp(Math.round(G.dem.biz - corpPain*1.5 + taxPain*0.2), 5, 95);
+  G.dem.pen = clamp(Math.round(G.dem.pen - taxPain*0.5 - welfGap*0.6 - nhsGap*0.9), 5, 95);
+  G.dem.u35 = clamp(Math.round(G.dem.u35 - taxPain*0.7 - welfGap*0.9 - nhsGap*0.6), 5, 95);
 
   // ── NHS WAITING TIMES (proxy via health spend + competence) ──
   // Not stored separately but logged narratively
@@ -721,7 +737,7 @@ function computeIdeoMismatch(){
 function applySocialPolicyEffects(){
   const soc = G.soc;
   // Apply a fraction of policy effects each month
-  const RATE = 0.05;
+  const RATE = 0.25; // increased from 0.05 — policy choices now meaningfully shift approval
   for(const [key, val] of Object.entries(soc)){
     const polData = SOCIAL_POLICIES[key];
     if(!polData) continue;
@@ -794,28 +810,44 @@ let assigningRole = null;
 
 function showScreen(name){
   ['setup','game-screen','event-screen','election-screen','gameover-screen'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.classList.add('hidden');
+    const el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.classList.add('hidden'); }
   });
   const target = document.getElementById(name);
-  if(target) target.classList.remove('hidden');
+  if(target){ target.style.display='block'; target.classList.remove('hidden'); }
 }
 
 function showTab(tab){
   currentTab = tab;
   ['brief','pol','cab','stats'].forEach(t=>{
-    document.getElementById(t+'-tab').style.display = (t===tab)?'block':'none';
-    document.getElementById('nb-'+t).classList.toggle('act', t===tab);
+    const el  = document.getElementById(t+'-tab');
+    const btn = document.getElementById('nb-'+t);
+    if(el)  el.style.display = (t===tab)?'block':'none';
+    if(btn) btn.classList.toggle('act', t===tab);
   });
-  if(tab==='pol') renderPolicyTab();
-  if(tab==='cab') renderCabinetTab();
-  if(tab==='stats') renderStatsTab();
-  if(tab==='brief') renderBriefing();
+  try {
+    if(tab==='pol')   renderPolicyTab();
+    if(tab==='cab')   renderCabinetTab();
+    if(tab==='stats') renderStatsTab();
+    if(tab==='brief') renderBriefing();
+  } catch(e){
+    console.error('Render error in tab "'+tab+'":', e);
+    setTimeout(function(){
+      try {
+        if(tab==='pol')   renderPolicyTab();
+        if(tab==='cab')   renderCabinetTab();
+        if(tab==='stats') renderStatsTab();
+        if(tab==='brief') renderBriefing();
+      } catch(e2){ console.error('Render retry failed:', e2); }
+    }, 50);
+  }
 }
 
 function updateMasthead(){
-  document.getElementById('mh-date').textContent = MONTHS[G.month]+' '+G.year;
-  document.getElementById('mh-info').textContent = G.partyName + ' Government';
+  const d = document.getElementById('mh-date');
+  const i = document.getElementById('mh-info');
+  if(d) d.textContent = MONTHS[G.month]+' '+G.year;
+  if(i) i.textContent = G.partyName + ' Government';
 }
 
 /* ── BRIEFING ── */
@@ -1210,7 +1242,11 @@ function skipEvent(){
 /* ── END MONTH ── */
 function endMonth(){
   if(!G) return;
-  simulateMonth();
+  try {
+    simulateMonth();
+  } catch(e){
+    console.error('simulateMonth error:', e);
+  }
   saveGame();
 
   // Check game over
@@ -1237,7 +1273,6 @@ function endMonth(){
   }
 
   showTab('brief');
-  renderBriefing();
 }
 
 /* ── SNAP ELECTION ── */
@@ -1294,7 +1329,6 @@ function triggerElection(isSnap){
 function continueAfterElection(){
   showScreen('game-screen');
   showTab('brief');
-  renderBriefing();
 }
 
 /* ── GAME OVER ── */
@@ -1369,8 +1403,6 @@ function startGame(){
   saveGame();
   showScreen('game-screen');
   showTab('brief');
-  renderBriefing();
-  updateMasthead();
 }
 
 /* ── SAVE / LOAD ── */
@@ -1388,8 +1420,33 @@ function loadGame(){
   if(!raw) return false;
   try {
     G = JSON.parse(raw);
+    sanitizeState();
     return true;
   } catch(e){ return false; }
+}
+
+function sanitizeState(){
+  // Fill in any fields missing from older saves
+  if(!G.log)           G.log = [];
+  if(!G.eventHistory)  G.eventHistory = [];
+  if(G.pendingEvent === undefined) G.pendingEvent = null;
+  if(G.lowApprovalStreak === undefined) G.lowApprovalStreak = 0;
+  if(G.electionCalled === undefined) G.electionCalled = false;
+  if(!G.dem) G.dem = {wc:45, mc:45, pen:45, u35:45, biz:45};
+  if(!G.pol) G.pol = {ir:5,itBasic:20,itHigher:40,corp:25,vat:20,ni:13,nhs:22,educ:16,def:14,welf:20,hous:12,infra:16};
+  if(!G.soc) G.soc = {immigration:'points',housing:'status',nhs:'status',crime:'police',env:'gradual',edu:'acad',welfare:'means'};
+  if(!G.cab) G.cab = {chancellor:null,home:null,health:null,foreign:null,education:null,whip:null};
+  ['wc','mc','pen','u35','biz'].forEach(k=>{ if(G.dem[k]===undefined) G.dem[k]=45; });
+  if(typeof G.seats !== 'number') G.seats = 338;
+  if(typeof G.unity !== 'number') G.unity = 70;
+  if(typeof G.turn  !== 'number') G.turn  = 1;
+  if(typeof G.month !== 'number') G.month = 0;
+  if(typeof G.year  !== 'number') G.year  = 2024;
+  if(typeof G.inflation !== 'number') G.inflation = 3.0;
+  if(typeof G.gdp  !== 'number')  G.gdp  = 1.5;
+  if(typeof G.unemp !== 'number') G.unemp = 4.5;
+  if(typeof G.debt  !== 'number') G.debt  = 75;
+  if(typeof G.deficit !== 'number') G.deficit = 1.5;
 }
 
 /* ── INIT ── */
@@ -1397,8 +1454,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   if(loadGame()){
     showScreen('game-screen');
     showTab('brief');
-    renderBriefing();
-    updateMasthead();
   } else {
     showScreen('setup');
     document.getElementById('setup').style.display='block';
@@ -1406,11 +1461,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
 });
 
-// Make setup visible
-document.addEventListener('DOMContentLoaded',()=>{
-  const s=document.getElementById('setup');
-  if(s && !localStorage.getItem('numtenSave')) s.style.display='block';
-});
 </script>
 </body>
 </html>
