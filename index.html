@@ -16,7 +16,7 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
 #app{width:100%;max-width:1160px;background:var(--paper);min-height:100vh;box-shadow:0 0 80px rgba(0,0,0,.8);position:relative;overflow:hidden}
 #app::after{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999}
 #masthead{border-bottom:4px double var(--ink);padding:8px 22px 6px;background:var(--paper)}
-.mh-meta{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:4px;margin-bottom:5px}
+.mh-meta{display:grid;grid-template-columns:1fr auto 1fr;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:4px;margin-bottom:5px}.mh-meta span:last-child{text-align:right}
 .mh-title{font-family:'Playfair Display',serif;font-size:58px;font-weight:900;line-height:1;text-align:center;letter-spacing:-.02em}
 .mh-sub{font-style:italic;font-size:11.5px;letter-spacing:.08em;text-align:center;color:#5a4020;margin:2px 0 5px}
 .mh-rule{background:var(--ink);color:var(--paper);text-align:center;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;padding:3px}
@@ -120,6 +120,7 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
 .dem-fill{height:100%;background:var(--red);transition:width .4s}
 .dem-val{width:38px;text-align:right;font-family:'Courier Prime',monospace;font-size:11px;font-weight:700}
 #infra-tab{display:none;padding:18px 24px}
+#media-tab{display:none;padding:18px 24px}
 .infra-layout{display:grid;grid-template-columns:1fr 320px;gap:18px}
 .infra-cat{margin-bottom:18px}
 .infra-cat-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;border-bottom:1px solid var(--ink);margin-bottom:8px;padding-bottom:3px}
@@ -196,6 +197,7 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
   .cab-layout{grid-template-columns:1fr}
   .mp-grid{grid-template-columns:1fr}
   #stats-tab{padding:12px 14px}
+  #media-tab{padding:12px 14px}
   .stats-grid{grid-template-columns:1fr 1fr}
   .infra-layout{grid-template-columns:1fr}
   .ev-inner{padding:16px}
@@ -254,6 +256,7 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
     <button class="nb"     id="nb-pol"    onclick="showTab('pol')">⚖️ Policy</button>
     <button class="nb"     id="nb-cab"    onclick="showTab('cab')">🏛️ Cabinet</button>
     <button class="nb"     id="nb-infra"  onclick="showTab('infra')">🏗️ Infrastructure</button>
+    <button class="nb"     id="nb-media"  onclick="showTab('media')">📰 Media</button>
     <button class="nb"     id="nb-stats"  onclick="showTab('stats')">📊 Statistics</button>
     <button class="nb snap"               onclick="doSnapElection()">📢 Snap Election</button>
     <button class="nb end"                onclick="endMonth()">End Month →</button>
@@ -272,6 +275,7 @@ body{background:#1a120a;font-family:'EB Garamond',serif;color:var(--ink);min-hei
   <div id="pol-tab"></div>
   <div id="cab-tab"></div>
   <div id="infra-tab"></div>
+  <div id="media-tab"></div>
   <div id="stats-tab"></div>
   <div id="savebar">Autosaved · <span id="save-time">—</span></div>
 </div>
@@ -298,94 +302,182 @@ const ALIGNMENTS={
        itBasic:26,itHigher:55,corp:35,vat:17,ni:15,
        nhsStaff:17,nhsCapital:8,socialCare:5,jsa:9,housingBen:6,disability:7,childBen:4,
        educ:22,def:7,hous:9,infraSpend:6,police:4,foreignAid:2,arts:2,
-       dem:{wc:60,mc:28,pen:42,u35:68,biz:15},seats:336,unity:62},
+       crime:58,division:38,
+       dem:{wc:60,mc:28,pen:42,u35:68,uc:15},
+       fac:{wc:[73,44,58],mc:[22,32,35],pen:[50,33,42],u35:[83,60,60],uc:[12,10,25]},seats:336,unity:62},
     soc:{immigration:'open',housing:'compulsory',nhs:'mission',crime:'rehab',env:'green',edu:'comp',energy:'nationalise',trade:'protectionist',transport:'renationalise',drugs:'decrim'}},
   centreLeft:{label:'Centre-Left',desc:'"Pragmatic progress. Idealism, but with a spreadsheet."',
     s:{inflation:3.4,ir:4.5,gdp:1.4,unemp:4.7,debt:80,deficit:2.8,
        itBasic:22,itHigher:46,corp:28,vat:20,ni:13,
        nhsStaff:14,nhsCapital:8,socialCare:4,jsa:7,housingBen:5,disability:6,childBen:4,
        educ:18,def:11,hous:11,infraSpend:12,police:5,foreignAid:2,arts:1,
-       dem:{wc:54,mc:47,pen:51,u35:59,biz:31},seats:342,unity:72},
+       crime:48,division:25,
+       dem:{wc:54,mc:47,pen:51,u35:59,uc:31},
+       fac:{wc:[65,42,52],mc:[48,42,50],pen:[58,44,48],u35:[70,53,52],uc:[29,25,44]},seats:342,unity:72},
     soc:{immigration:'points',housing:'build',nhs:'funding',crime:'police',env:'gradual',edu:'comp',energy:'regulated',trade:'bilateral',transport:'status',drugs:'status'}},
   centre:{label:'Centre',desc:'"Balanced, moderate, and profoundly unthreatening."',
     s:{inflation:3.0,ir:5.0,gdp:1.9,unemp:4.2,debt:74,deficit:2.0,
        itBasic:20,itHigher:40,corp:25,vat:20,ni:13,
        nhsStaff:12,nhsCapital:6,socialCare:4,jsa:7,housingBen:5,disability:5,childBen:3,
        educ:16,def:14,hous:8,infraSpend:8,police:5,foreignAid:1,arts:1,
-       dem:{wc:47,mc:52,pen:52,u35:47,biz:50},seats:338,unity:77},
+       crime:42,division:18,
+       dem:{wc:47,mc:52,pen:52,u35:47,uc:50},
+       fac:{wc:[52,44,45],mc:[50,52,55],pen:[54,50,50],u35:[50,46,44],uc:[50,48,52]},seats:338,unity:77},
     soc:{immigration:'points',housing:'status',nhs:'status',crime:'police',env:'gradual',edu:'acad',energy:'regulated',trade:'bilateral',transport:'status',drugs:'status'}},
   centreRight:{label:'Centre-Right',desc:'"Free markets, strong defence, and a nice cup of tea."',
     s:{inflation:2.8,ir:5.25,gdp:1.7,unemp:4.3,debt:68,deficit:1.5,
        itBasic:20,itHigher:40,corp:22,vat:20,ni:12,
        nhsStaff:11,nhsCapital:6,socialCare:3,jsa:6,housingBen:4,disability:5,childBen:3,
        educ:15,def:18,hous:6,infraSpend:10,police:6,foreignAid:1,arts:1,
-       dem:{wc:38,mc:56,pen:62,u35:32,biz:65},seats:340,unity:74},
+       crime:38,division:24,
+       dem:{wc:38,mc:56,pen:62,u35:32,uc:65},
+       fac:{wc:[35,45,35],mc:[46,60,65],pen:[55,70,62],u35:[25,37,34],uc:[68,72,52]},seats:340,unity:74},
     soc:{immigration:'points',housing:'dereg',nhs:'status',crime:'tough',env:'gradual',edu:'acad',energy:'regulated',trade:'wto',transport:'status',drugs:'status'}},
   hardRight:{label:'Hard Right',desc:'"Deport problems. Lower taxes. Repeat as necessary."',
     s:{inflation:3.1,ir:5.5,gdp:1.4,unemp:4.9,debt:63,deficit:1.2,
        itBasic:18,itHigher:35,corp:19,vat:20,ni:12,
        nhsStaff:10,nhsCapital:5,socialCare:3,jsa:5,housingBen:3,disability:4,childBen:2,
        educ:14,def:22,hous:5,infraSpend:13,police:7,foreignAid:1,arts:0,
-       dem:{wc:45,mc:47,pen:67,u35:25,biz:71},seats:335,unity:65},
+       crime:35,division:36,
+       dem:{wc:45,mc:47,pen:67,u35:25,uc:71},
+       fac:{wc:[33,60,42],mc:[28,62,58],pen:[56,78,68],u35:[14,31,30],uc:[77,80,48]},seats:335,unity:65},
     soc:{immigration:'nearzero',housing:'dereg',nhs:'priv',crime:'zerotol',env:'sceptic',edu:'grammar',energy:'priv',trade:'wto',transport:'priv',drugs:'zerotol'}}
+};
+
+// Sub-faction definitions — static structure, starting approvals set per alignment in freshState
+// ideology: left(-5) to right(+5). weight: proportion of parent group.
+// G.factions mirrors this structure with .approval on each entry.
+const FACTIONS_DEF={
+  wc: [{id:'unions',ideo:-3,w:0.40},{id:'toryWorkers',ideo:+2,w:0.35},{id:'youngWc',ideo:-1,w:0.25}],
+  mc: [{id:'publicSector',ideo:-2,w:0.40},{id:'smallBiz',ideo:+3,w:0.30},{id:'suburbanMc',ideo:+1,w:0.30}],
+  pen:[{id:'stateDependent',ideo:-1,w:0.40},{id:'propertyOwners',ideo:+3,w:0.35},{id:'activeBoomers',ideo:+1,w:0.25}],
+  u35:[{id:'urbanProg',ideo:-4,w:0.35},{id:'youngProf',ideo:+1,w:0.40},{id:'disengaged',ideo:0,w:0.25}],
+  uc: [{id:'cityFinance',ideo:+2,w:0.40},{id:'landedGentry',ideo:+3,w:0.35},{id:'culturalElite',ideo:-2,w:0.25}],
 };
 
 const SOCIAL_POLICIES={
   immigration:{label:'Immigration Policy',opts:{
-    open:{label:'Open Movement',desc:'Free movement — no controls',fx:{u35:+5,mc:+3,wc:-7,pen:-10,biz:+9}},
-    points:{label:'Points-Based',desc:'Skills-based system',fx:{u35:-2,mc:+2,wc:+4,pen:+5,biz:+4}},
-    australian:{label:'Australian-Style Points',desc:'Strict skills & salary thresholds',fx:{u35:-5,mc:+4,wc:+7,pen:+9,biz:+2}},
-    seasonal:{label:'Seasonal Workers Only',desc:'Permit-only, sector-specific',fx:{u35:-7,mc:0,wc:+8,pen:+10,biz:-4}},
-    nearzero:{label:'Near-Zero Net Migration',desc:'Aggressive targets, mass deportation',fx:{u35:-12,mc:-5,wc:+9,pen:+13,biz:-9,inflation:+.3}}}},
+    open:{label:'Open Movement',desc:'Free movement — no controls',lean:-4,fx:{u35:+5,mc:+3,wc:-7,pen:-10,uc:+9}},
+    points:{label:'Points-Based',desc:'Skills-based system',lean:0,fx:{u35:-2,mc:+2,wc:+4,pen:+5,uc:+4}},
+    australian:{label:'Australian-Style Points',desc:'Strict skills & salary thresholds',lean:+1,fx:{u35:-5,mc:+4,wc:+7,pen:+9,uc:+2}},
+    seasonal:{label:'Seasonal Workers Only',desc:'Permit-only, sector-specific',lean:+2,fx:{u35:-7,mc:0,wc:+8,pen:+10,uc:-4}},
+    nearzero:{label:'Near-Zero Net Migration',desc:'Aggressive targets, mass deportation',lean:+4,fx:{u35:-12,mc:-5,wc:+9,pen:+13,uc:-9,inflation:+.3}}}},
   housing:{label:'Housing Policy',opts:{
-    dereg:{label:'Full Deregulation',desc:'Remove all planning restrictions',fx:{biz:+8,mc:+5,u35:+3,wc:-3,pen:-6}},
-    lightdereg:{label:'Light-Touch Deregulation',desc:'Ease planning in growth zones',fx:{biz:+5,mc:+3,u35:+2,wc:0,pen:-2}},
-    status:{label:'Status Quo',desc:'No major change',fx:{}},
-    build:{label:'Social Build Programme',desc:'Mass council house construction',fx:{u35:+7,wc:+6,mc:+2,biz:-3}},
-    compulsory:{label:'Compulsory Purchase & Mass Build',desc:'State acquires land, builds at scale',fx:{u35:+10,wc:+8,mc:-3,pen:-3,biz:-8}}}},
+    dereg:{label:'Full Deregulation',desc:'Remove all planning restrictions',lean:+3,fx:{uc:+8,mc:+5,u35:+3,wc:-3,pen:-6}},
+    lightdereg:{label:'Light-Touch Deregulation',desc:'Ease planning in growth zones',lean:+2,fx:{uc:+5,mc:+3,u35:+2,wc:0,pen:-2}},
+    status:{label:'Status Quo',desc:'No major change',lean:0,fx:{}},
+    build:{label:'Social Build Programme',desc:'Mass council house construction',lean:-2,fx:{u35:+7,wc:+6,mc:+2,uc:-3}},
+    compulsory:{label:'Compulsory Purchase & Mass Build',desc:'State acquires land, builds at scale',lean:-4,fx:{u35:+10,wc:+8,mc:-3,pen:-3,uc:-8}}}},
   nhs:{label:'NHS Policy',opts:{
-    priv:{label:'Full Privatisation',desc:'Private providers at scale',fx:{biz:+9,wc:-14,mc:-8,pen:-11,u35:-9}},
-    mixed:{label:'Mixed Market',desc:'Competition alongside NHS',fx:{biz:+5,wc:-6,mc:-2,pen:-5,u35:-4}},
-    status:{label:'Status Quo',desc:'Maintain current model',fx:{}},
-    funding:{label:'Major Investment',desc:'Significant extra NHS spending',fx:{wc:+8,mc:+5,pen:+9,u35:+5,biz:-3}},
-    mission:{label:'NHS as National Mission',desc:'Structural reform — very expensive, high risk',fx:{wc:+13,mc:+7,pen:+11,u35:+8,biz:-7}}}},
+    priv:{label:'Full Privatisation',desc:'Private providers at scale',lean:+4,fx:{uc:+9,wc:-14,mc:-8,pen:-11,u35:-9}},
+    mixed:{label:'Mixed Market',desc:'Competition alongside NHS',lean:+2,fx:{uc:+5,wc:-6,mc:-2,pen:-5,u35:-4}},
+    status:{label:'Status Quo',desc:'Maintain current model',lean:0,fx:{}},
+    funding:{label:'Major Investment',desc:'Significant extra NHS spending',lean:-2,fx:{wc:+8,mc:+5,pen:+9,u35:+5,uc:-3}},
+    mission:{label:'NHS as National Mission',desc:'Structural reform — very expensive, high risk',lean:-4,fx:{wc:+13,mc:+7,pen:+11,u35:+8,uc:-7}}}},
   crime:{label:'Crime & Justice',opts:{
-    zerotol:{label:'Zero Tolerance',desc:'Maximum sentences, stop & search',fx:{pen:+9,wc:+5,mc:+4,u35:-8,biz:+3}},
-    tough:{label:'Tough Sentencing',desc:'Longer sentences, more prisons',fx:{pen:+7,wc:+4,mc:+4,u35:-5,biz:+2}},
-    police:{label:'Police Expansion',desc:'20,000 extra officers',fx:{wc:+5,pen:+7,mc:+4,u35:+1,biz:+3}},
-    mixed:{label:'Mixed Approach',desc:'Police + early intervention',fx:{wc:+3,pen:+3,mc:+3,u35:+3,biz:+2}},
-    rehab:{label:'Rehabilitation Focus',desc:'Cut reoffending long-term',fx:{u35:+7,mc:+4,wc:-2,pen:-8}}}},
+    zerotol:{label:'Zero Tolerance',desc:'Maximum sentences, stop & search',lean:+4,fx:{pen:+9,wc:+5,mc:+4,u35:-8,uc:+3}},
+    tough:{label:'Tough Sentencing',desc:'Longer sentences, more prisons',lean:+3,fx:{pen:+7,wc:+4,mc:+4,u35:-5,uc:+2}},
+    police:{label:'Police Expansion',desc:'20,000 extra officers',lean:+1,fx:{wc:+5,pen:+7,mc:+4,u35:+1,uc:+3}},
+    mixed:{label:'Mixed Approach',desc:'Police + early intervention',lean:0,fx:{wc:+3,pen:+3,mc:+3,u35:+3,uc:+2}},
+    rehab:{label:'Rehabilitation Focus',desc:'Cut reoffending long-term',lean:-3,fx:{u35:+7,mc:+4,wc:-2,pen:-8}}}},
   env:{label:'Environment',opts:{
-    green:{label:'Green New Deal',desc:'Radical rapid decarbonisation',fx:{u35:+12,mc:+5,biz:-7,pen:-4,wc:-2}},
-    gradual:{label:'Net Zero — Gradual',desc:'Phased clean-energy transition',fx:{u35:+4,mc:+3,biz:+1}},
-    light:{label:'Light Touch',desc:'Minimal green regulation',fx:{u35:-7,mc:-3,biz:+7,pen:+3,wc:+3}},
-    sceptic:{label:'Climate Sceptic',desc:'Roll back green commitments',fx:{u35:-13,mc:-6,biz:+10,pen:+4,wc:+5}}}},
+    green:{label:'Green New Deal',desc:'Radical rapid decarbonisation',lean:-4,fx:{u35:+12,mc:+5,uc:-7,pen:-4,wc:-2}},
+    gradual:{label:'Net Zero — Gradual',desc:'Phased clean-energy transition',lean:-1,fx:{u35:+4,mc:+3,uc:+1}},
+    light:{label:'Light Touch',desc:'Minimal green regulation',lean:+2,fx:{u35:-7,mc:-3,uc:+7,pen:+3,wc:+3}},
+    sceptic:{label:'Climate Sceptic',desc:'Roll back green commitments',lean:+4,fx:{u35:-13,mc:-6,uc:+10,pen:+4,wc:+5}}}},
   edu:{label:'Education',opts:{
-    grammar:{label:'Grammar Schools',desc:'Expand selective education',fx:{mc:+5,pen:+5,wc:-7,u35:-3,biz:+2}},
-    comp:{label:'Comprehensive',desc:'Universal non-selective system',fx:{wc:+5,u35:+3,mc:0,pen:-2,biz:-2}},
-    acad:{label:'Academy Expansion',desc:'More independent academies',fx:{mc:+4,biz:+4,wc:-2,pen:+2}},
-    free:{label:'Free Schools & Vouchers',desc:'Parental choice, market model',fx:{mc:+6,biz:+5,wc:-6,pen:0,u35:-2}}}},
+    grammar:{label:'Grammar Schools',desc:'Expand selective education',lean:+3,fx:{mc:+5,pen:+5,wc:-7,u35:-3,uc:+2}},
+    comp:{label:'Comprehensive',desc:'Universal non-selective system',lean:-2,fx:{wc:+5,u35:+3,mc:0,pen:-2,uc:-2}},
+    acad:{label:'Academy Expansion',desc:'More independent academies',lean:+2,fx:{mc:+4,uc:+4,wc:-2,pen:+2}},
+    free:{label:'Free Schools & Vouchers',desc:'Parental choice, market model',lean:+4,fx:{mc:+6,uc:+5,wc:-6,pen:0,u35:-2}}}},
   energy:{label:'Energy Policy',opts:{
-    nationalise:{label:'Nationalise Energy',desc:'State-owned energy companies',fx:{wc:+8,u35:+5,mc:-4,biz:-10,pen:+4}},
-    regulated:{label:'Regulated Market',desc:'Private with price caps',fx:{wc:+3,mc:+2,biz:-1,u35:+2,pen:+3}},
-    priv:{label:'Full Privatisation',desc:'Remove all price caps',fx:{biz:+9,wc:-8,mc:-4,pen:-7,u35:-5}},
-    netzero:{label:'Net Zero Subsidy Push',desc:'Massive green energy subsidy',fx:{u35:+9,mc:+4,biz:-4,pen:-2,wc:+2}}}},
+    nationalise:{label:'Nationalise Energy',desc:'State-owned energy companies',lean:-4,fx:{wc:+8,u35:+5,mc:-4,uc:-10,pen:+4}},
+    regulated:{label:'Regulated Market',desc:'Private with price caps',lean:0,fx:{wc:+3,mc:+2,uc:-1,u35:+2,pen:+3}},
+    priv:{label:'Full Privatisation',desc:'Remove all price caps',lean:+4,fx:{uc:+9,wc:-8,mc:-4,pen:-7,u35:-5}},
+    netzero:{label:'Net Zero Subsidy Push',desc:'Massive green energy subsidy',lean:-3,fx:{u35:+9,mc:+4,uc:-4,pen:-2,wc:+2}}}},
   trade:{label:'Trade Policy',opts:{
-    wto:{label:'WTO Rules Only',desc:'Free trade, no bilateral deals',fx:{biz:+6,mc:+4,wc:-4,pen:-2,u35:+1}},
-    bilateral:{label:'Bilateral Deals',desc:'Negotiate case-by-case',fx:{biz:+4,mc:+3,wc:+1,pen:+1}},
-    protectionist:{label:'Protectionist Tariffs',desc:'Protect British industry',fx:{wc:+7,pen:+3,mc:-3,biz:-7,u35:-3}},
-    commonwealth:{label:'Commonwealth Priority',desc:'Imperial preference reborn',fx:{pen:+8,wc:+4,mc:-1,biz:-3,u35:-5}}}},
+    wto:{label:'WTO Rules Only',desc:'Free trade, no bilateral deals',lean:+3,fx:{uc:+6,mc:+4,wc:-4,pen:-2,u35:+1}},
+    bilateral:{label:'Bilateral Deals',desc:'Negotiate case-by-case',lean:+1,fx:{uc:+4,mc:+3,wc:+1,pen:+1}},
+    protectionist:{label:'Protectionist Tariffs',desc:'Protect British industry',lean:-3,fx:{wc:+7,pen:+3,mc:-3,uc:-7,u35:-3}},
+    commonwealth:{label:'Commonwealth Priority',desc:'Imperial preference reborn',lean:+2,fx:{pen:+8,wc:+4,mc:-1,uc:-3,u35:-5}}}},
   transport:{label:'Transport Policy',opts:{
-    renationalise:{label:'Renationalise Rail',desc:'State-owned trains',fx:{wc:+9,u35:+6,mc:+3,pen:+4,biz:-5}},
-    status:{label:'Status Quo',desc:'Keep franchises',fx:{}},
-    priv:{label:'Further Privatisation',desc:'Bus deregulation, road pricing',fx:{biz:+6,mc:+2,wc:-7,u35:-5,pen:-6}},
-    integrated:{label:'Integrated National Network',desc:'Coordinated national plan — expensive',fx:{wc:+8,u35:+7,mc:+5,pen:+5,biz:-2}}}},
+    renationalise:{label:'Renationalise Rail',desc:'State-owned trains',lean:-4,fx:{wc:+9,u35:+6,mc:+3,pen:+4,uc:-5}},
+    status:{label:'Status Quo',desc:'Keep franchises',lean:0,fx:{}},
+    priv:{label:'Further Privatisation',desc:'Bus deregulation, road pricing',lean:+4,fx:{uc:+6,mc:+2,wc:-7,u35:-5,pen:-6}},
+    integrated:{label:'Integrated National Network',desc:'Coordinated national plan — expensive',lean:-2,fx:{wc:+8,u35:+7,mc:+5,pen:+5,uc:-2}}}},
   drugs:{label:'Drug Policy',opts:{
-    zerotol:{label:'Zero Tolerance',desc:'Maximum enforcement',fx:{pen:+6,wc:+3,u35:-9,mc:+2,biz:+2}},
-    status:{label:'Status Quo',desc:'Current law maintained',fx:{}},
-    decrim:{label:'Decriminalise Possession',desc:'No jail for personal use',fx:{u35:+10,mc:+4,wc:+2,pen:-7,biz:+2}},
-    legalise:{label:'Legalise Cannabis',desc:'Regulate & tax cannabis market',fx:{u35:+14,mc:+2,wc:+4,pen:-11,biz:+5}}}}
+    zerotol:{label:'Zero Tolerance',desc:'Maximum enforcement',lean:+3,fx:{pen:+6,wc:+3,u35:-9,mc:+2,uc:+2}},
+    status:{label:'Status Quo',desc:'Current law maintained',lean:0,fx:{}},
+    decrim:{label:'Decriminalise Possession',desc:'No jail for personal use',lean:-3,fx:{u35:+10,mc:+4,wc:+2,pen:-7,uc:+2}},
+    legalise:{label:'Legalise Cannabis',desc:'Regulate & tax cannabis market',lean:-5,fx:{u35:+14,mc:+2,wc:+4,pen:-11,uc:+5}}}}
 };
+
+
+// ─── MEDIA ───────────────────────────────────────────────────
+const MEDIA_STANCES={
+  free:   {label:'Free Press',    leanMult:0,  divMod:0,    freedomDrain:0,
+           desc:'No editorial control. Stories run as they will. Division stays low — but so does your ability to spin.'},
+  neutral:{label:'Neutral',       leanMult:0,  divMod:0,    freedomDrain:0.3,
+           desc:'Mild management — ensure balance, nothing more. Minimal effect, minimal risk.'},
+  managed:{label:'Managed',       leanMult:0.4,divMod:0.15, freedomDrain:0.7,
+           desc:'Friendly framing, buried negatives, sympathetic interviewers. Pro-government stories unlocked.'},
+  partisan:{label:'Partisan',     leanMult:0.8,divMod:0.35, freedomDrain:1.2,
+            desc:'The press is your instrument. Opposition coverage is hostile. All stories unlocked. Division rises.'},
+  propaganda:{label:'Propaganda', leanMult:1.3,divMod:0.65, freedomDrain:2.2,
+              desc:'Total narrative control. Dissent is suppressed. Maximum effect — but the world is watching.'},
+};
+
+const MEDIA_STORIES=[
+  // Pro-government
+  {id:'econRecord',  cat:'pro',  label:'Economic Record',
+   headline:'CHANCELLOR HAILED AS "ARCHITECT OF RECOVERY" BY SYMPATHETIC ECONOMISTS',
+   desc:'Commission favourable coverage of growth and stability figures.',
+   cooldown:3, divCost:1.5,
+   truthFn:()=>G.gdp>1.5&&G.deficit<3,
+   fx:{mc:+4,uc:+3,u35:+2}, minStance:'managed'},
+  {id:'pmHumanInt', cat:'pro',  label:'PM Human Interest',
+   headline:'PM VISITS FLOOD VICTIMS; DESCRIBED AS "GENUINELY PRESENT" BY LOCAL PAPER',
+   desc:'A warm, sympathetic profile piece. Always publishable.',
+   cooldown:3, divCost:1.0,
+   truthFn:()=>true,
+   fx:{wc:+3,pen:+3}, minStance:'managed'},
+  {id:'jobsAnnounce',cat:'pro', label:'Jobs Announcement',
+   headline:'RECORD EMPLOYMENT: GOVERNMENT CLAIMS CREDIT; OPPOSITION DISPUTES FIGURES',
+   desc:'Promote falling unemployment figures with friendly coverage.',
+   cooldown:3, divCost:1.5,
+   truthFn:()=>G.unemp<4.5,
+   fx:{u35:+4,mc:+3,wc:+2}, minStance:'managed'},
+  {id:'nhsSuccess',  cat:'pro',  label:'NHS Success Story',
+   headline:'WAITING LISTS FALL FOR FIRST TIME IN YEARS; NHS STAFF "CAUTIOUSLY OPTIMISTIC"',
+   desc:'Highlight NHS improvements. Only credible if you\'ve funded it.',
+   cooldown:4, divCost:1.5,
+   truthFn:()=>G.pol.nhsStaff>=13&&G.pol.nhsCapital>=7,
+   fx:{wc:+5,pen:+4,mc:+2}, minStance:'managed'},
+  // Attack stories
+  {id:'oppEconFail', cat:'attack',label:'Opposition Economic Incompetence',
+   headline:'OPPOSITION PLAN WOULD "COST EVERY FAMILY £3,400", TREASURY ANALYSIS FINDS',
+   desc:'Commission analysis framing the opposition\'s economic plans as reckless.',
+   cooldown:5, divCost:2.5,
+   truthFn:()=>false, // always questionable
+   seatsFx:-4,
+   fx:{mc:+2,pen:+2,uc:+2}, minStance:'partisan'},
+  {id:'oppScandal',  cat:'attack',label:'Opposition Scandal',
+   headline:'EXCLUSIVE: SHADOW MINISTER\'S EXPENSES QUESTIONED; OPPOSITION "LOOKING INTO IT"',
+   desc:'Run an opposition sleaze story. Damaging — but backfire risk is real.',
+   cooldown:6, divCost:3.0,
+   truthFn:()=>false,
+   seatsFx:-6,
+   fx:{pen:+3,wc:+2,mc:+2}, minStance:'partisan'},
+  {id:'oppExtremism',cat:'attack',label:'Extremism Smear',
+   headline:'OPPOSITION LINKS TO FRINGE GROUPS EXAMINED; PARTY DENIES "ANY ASSOCIATION"',
+   desc:'Frames the opposition as extreme. Plays well with pensioners and working class. U35 backlash likely.',
+   cooldown:7, divCost:4.0,
+   truthFn:()=>false,
+   seatsFx:-8,
+   fx:{pen:+5,wc:+4,u35:-6,mc:-2}, minStance:'propaganda'},
+];
+
+const STANCE_ORDER=['free','neutral','managed','partisan','propaganda'];
 
 const MP_POOL=[
   {id:1,name:'Margaret Holloway',ideo:-2,comp:8,loyal:9,desc:'Former NHS consultant. Efficient, serious, occasionally human.'},
@@ -514,6 +606,284 @@ const EVENTS=[
      {lbl:'Emergency flood relief fund',desc:'Immediate compensation and repair.',fx:{wc:+7,pen:+6,mc:+4,deficit:+.8}},
      {lbl:'Long-term flood defence investment',desc:'Expensive, but future-proof.',fx:{wc:+4,u35:+5,mc:+3,biz:-2,deficit:+1.2}},
      {lbl:'Blame the Environment Agency',desc:'Redirect responsibility downward.',fx:{wc:-8,pen:-7,mc:-5,unity:-3}},
+   ]},
+
+  {id:'housingcrisis',tag:'Housing',
+   hl:"AVERAGE HOUSE PRICE NOW 14 TIMES MEDIAN SALARY; GENERATION RENT 'NOT SURPRISED'",
+   story:"The Halifax reports the average house now costs fourteen times the median annual salary. A twenty-six-year-old told the BBC she had 'basically given up.' The Housing Minister said the market was 'working as intended,' then clarified he meant 'functioning.' Then stopped clarifying.",
+   choices:[
+     {lbl:'Emergency social house build',desc:'Major direct build programme. Expensive and slow.',fx:{u35:+9,wc:+7,mc:-2,uc:-4,deficit:+1.2}},
+     {lbl:'Stamp duty cut',desc:'Boosts buyers. Also boosts prices.',fx:{mc:+5,uc:+4,u35:+2,wc:-3,deficit:+.5}},
+     {lbl:'Renters\' rights reform',desc:'Cap increases, no-fault eviction ban.',fx:{u35:+8,wc:+5,mc:-3,uc:-5}},
+   ]},
+  {id:'aiboom',tag:'Technology',
+   hl:"UK AI SECTOR VALUED AT £200BN; NOBODY FULLY UNDERSTANDS WHAT IT DOES",
+   story:"Britain's artificial intelligence sector is now valued at two hundred billion pounds, making it the third largest in the world. The Science Secretary gave a speech at a data centre. She used the word 'transformative' eleven times. The data centre hummed.",
+   choices:[
+     {lbl:'National AI investment fund',desc:'Double down on Britain\'s lead.',fx:{uc:+6,mc:+4,u35:+5,gdp:+.12,deficit:+.6}},
+     {lbl:'AI safety regulation',desc:'Responsible development. Tech sector nervous.',fx:{u35:+6,mc:+3,uc:-4,gdp:+.04}},
+     {lbl:'Do nothing and see what happens',desc:'Classic British approach.',fx:{gdp:+.05}},
+   ]},
+  {id:'waterscandal',tag:'Utilities',
+   hl:"WATER COMPANY PAYS £180M IN BONUSES WHILE PUMPING SEWAGE INTO RIVERS",
+   story:"Thames Water declared a £180 million executive bonus pool on the same day the Environment Agency confirmed eleven thousand hours of sewage discharge into the Thames. An MP swam the Thames in protest. The swim was not recommended by doctors.",
+   choices:[
+     {lbl:'Windfall tax on water companies',desc:'Very popular. Industry furious.',fx:{wc:+10,u35:+8,mc:+5,uc:-9,deficit:-.4}},
+     {lbl:'Renationalisation threat',desc:'Spook them into compliance.',fx:{wc:+6,u35:+5,uc:-6,mc:+3}},
+     {lbl:'Independent regulator review',desc:'Commission a review. Very British.',fx:{wc:-4,u35:-4,mc:-2}},
+   ]},
+  {id:'nhs_scandal',tag:'Health',
+   hl:"HOSPITAL TRUST RATES ITSELF 'OUTSTANDING' WEEK BEFORE 47-PAGE CQC REPORT",
+   story:"Midlands General Hospital Trust described its performance as 'outstanding' in its annual report. The Care Quality Commission published a forty-seven page report seven days later. The words 'outstanding' and 'not' appear together nineteen times.",
+   choices:[
+     {lbl:'Intervene directly',desc:'Special measures. Very public.',fx:{wc:+5,pen:+6,mc:+3,deficit:+.4,unity:-3}},
+     {lbl:'Sack the board',desc:'Decisive. The trust is now leaderless.',fx:{wc:+4,pen:+5,mc:+2,unity:-5}},
+     {lbl:'Ask for an improvement plan',desc:'They\'ll write one. Whether it means anything is another matter.',fx:{wc:-3,pen:-4,mc:-2}},
+   ]},
+  {id:'energybill',tag:'Economy',
+   hl:"ENERGY BILLS TO RISE 28%; CHANCELLOR PHOTOGRAPHED AT A CANDLELIT DINNER",
+   story:"Ofgem confirmed a twenty-eight percent rise in the energy price cap. The Chancellor was photographed the same evening at a fundraising dinner lit entirely by candelabras. His press team described the lighting as 'pre-arranged.'",
+   choices:[
+     {lbl:'Extend the energy support scheme',desc:'Cushion the blow. Adds to deficit.',fx:{wc:+8,pen:+7,mc:+4,u35:+5,deficit:+.9}},
+     {lbl:'Windfall tax top-up',desc:'Make energy companies pay.',fx:{wc:+7,pen:+5,uc:-6,deficit:-.2}},
+     {lbl:'Means-tested support only',desc:'Targeted help. Many fall through gaps.',fx:{wc:-3,pen:-4,u35:-3,deficit:+.3}},
+   ]},
+  {id:'unistrike',tag:'Industrial Action',
+   hl:"UNIVERSITY LECTURERS STRIKE FOR 42ND DAY; STUDENTS UNSURE IF THEY SHOULD BE ANGRY",
+   story:"UCU members have now been on strike for forty-two days across sixty-one universities. Student opinion is divided. Several told journalists they 'sort of agree with the lecturers but also have exams.' The Vice Chancellors have not commented from their second homes.",
+   choices:[
+     {lbl:'Broker a settlement',desc:'Government intervention. Costs credibility and cash.',fx:{u35:+7,wc:+4,mc:+3,deficit:+.4,unity:+2}},
+     {lbl:'Side with management',desc:'Freeze negotiations.',fx:{u35:-9,wc:-5,mc:-3,unity:-4}},
+     {lbl:'Express sympathy, do nothing',desc:'Classic.',fx:{u35:-4,mc:-2,unity:-1}},
+   ]},
+  {id:'localelectloss',tag:'Politics',
+   hl:"GOVERNING PARTY LOSES 214 COUNCIL SEATS IN LOCAL ELECTIONS; SPIN DOCTORS SPIN",
+   story:"Overnight results show the governing party losing two hundred and fourteen council seats and four mayoral contests. The Party Chairman described this as 'a protest vote at mid-term.' A journalist asked what distance constituted mid-term. He did not answer.",
+   choices:[
+     {lbl:'Reshuffle cabinet',desc:'Fresh faces. Some of them old faces with new titles.',fx:{unity:+6,mc:+3,wc:+2}},
+     {lbl:'Reset — major policy announcement',desc:'Pivot hard. Risk looking panicked.',fx:{wc:+4,u35:+3,mc:+2,unity:-4}},
+     {lbl:'Hold the line',desc:'\"The fundamentals are sound.\" They are debatable.',fx:{unity:+2,wc:-3,u35:-3}},
+   ]},
+  {id:'spycops',tag:'Political Scandal',
+   hl:"UNDERCOVER POLICE INFILTRATION REPORT: 'WORSE THAN FEARED, BETTER THAN ASSUMED'",
+   story:"The long-awaited public inquiry into undercover policing published its findings. The chair described the situation as 'worse than feared but better than the worst assumptions.' This pleased nobody. Compensation for victims was recommended. The Home Office said it would 'consider' the recommendations.",
+   choices:[
+     {lbl:'Accept all recommendations',desc:'Do the right thing. Expensive.',fx:{wc:+6,u35:+8,mc:+3,pen:-2,deficit:+.5}},
+     {lbl:'Partial acceptance',desc:'Accept some. Wiggle on the costly ones.',fx:{wc:+2,u35:+3,mc:+1}},
+     {lbl:'Reject recommendations',desc:'\"We have moved on.\" You have not.',fx:{wc:-8,u35:-11,mc:-6,pen:-3,unity:-5}},
+   ]},
+  {id:'droughtwater',tag:'Climate',
+   hl:"DROUGHT DECLARED IN SEVEN REGIONS; MINISTER SAYS 'WE ALL NEED TO DO OUR BIT'",
+   story:"The Environment Agency declared a drought in seven regions following the driest spring since 1976. The Environment Minister asked for 'personal responsibility' from the public. A water company discharged effluent into a reservoir the same afternoon.",
+   choices:[
+     {lbl:'Water infrastructure investment',desc:'Major new reservoirs and pipes.',fx:{u35:+5,wc:+4,mc:+3,pen:+3,deficit:+1.0}},
+     {lbl:'Compulsory usage restrictions',desc:'Hosepipe bans and rationing.',fx:{mc:-2,wc:-3,u35:-4,pen:-3}},
+     {lbl:'Blame water companies publicly',desc:'Popular. Solves nothing immediately.',fx:{wc:+4,u35:+5,mc:+2,uc:-5}},
+   ]},
+  {id:'royalevent',tag:'Culture',
+   hl:"ROYAL EVENT DRAWS 3.8M VIEWERS; REPUBLIC MEMBERSHIP RISES 40% SIMULTANEOUSLY",
+   story:"A major royal occasion drew three point eight million television viewers. Republic, the anti-monarchy campaign group, reported a forty percent rise in new memberships in the same forty-eight hours. The Palace described both figures as 'a reflection of a diverse and engaged public.'",
+   choices:[
+     {lbl:'Champion the occasion',desc:'Lean into tradition. Pensioners love it.',fx:{pen:+7,wc:+3,mc:+2,u35:-5}},
+     {lbl:'Stay diplomatically neutral',desc:'Something for everyone and no one.',fx:{}},
+     {lbl:'Quietly signal openness to reform',desc:'Careful positioning. Traditionalists rattled.',fx:{u35:+6,mc:+2,pen:-6,wc:-3}},
+   ]},
+  {id:'nhs_privatisation_leak',tag:'Political Scandal',
+   hl:"LEAKED DOCUMENT REVEALS PRIVATE HEALTH DISCUSSIONS; HEALTH SECRETARY DENIES EVERYTHING",
+   story:"A leaked internal memo suggests the Department of Health held discussions with three private healthcare providers about 'long-term partnership models' for diagnostics. The Health Secretary said the document was 'taken out of context.' The document contained no context to take it out of.",
+   choices:[
+     {lbl:'Full transparency — publish all meetings',desc:'Come clean. Probably hurts less than the drip.',fx:{wc:+4,u35:+4,mc:+2,pen:+3,unity:-5}},
+     {lbl:'Deny and contain',desc:'Hold the line. Pray nothing else leaks.',fx:{wc:-6,u35:-7,mc:-4,pen:-5,unity:+3}},
+     {lbl:'Sack the Health Secretary',desc:'Sacrifice. Gets it off the front page.',fx:{wc:+2,u35:+3,mc:+1,unity:-7}},
+   ]},
+  {id:'socialmediabill',tag:'Technology',
+   hl:"SOCIAL MEDIA BILL PASSES; PLATFORMS ANNOUNCE 'COMPLIANCE REVIEW PERIOD'",
+   story:"The Online Safety Amendment Bill passed its third reading. Meta, Google, and TikTok all announced a 'compliance review period' of indeterminate length. The Culture Secretary called this 'a step forward.' Critics called it 'a delay with branding.'",
+   choices:[
+     {lbl:'Enforce immediately',desc:'Fine non-compliant platforms hard and fast.',fx:{u35:+6,wc:+4,pen:+5,mc:+3,uc:-4}},
+     {lbl:'Reasonable transition period',desc:'Six months. The platforms will use all of it.',fx:{u35:+2,mc:+2,uc:-1}},
+     {lbl:'Let platforms self-regulate',desc:'They will do this very slowly and very badly.',fx:{u35:-6,wc:-4,pen:-5,uc:+5}},
+   ]},
+  {id:'pmgaffe',tag:'Political Scandal',
+   hl:"PM'S OPEN MIC COMMENT ABOUT VOTER IN MARGINAL SEAT HEARD BY ENTIRE NATION",
+   story:"Following a campaign visit, the Prime Minister's microphone remained active as they returned to the car and described a voter who had challenged them on benefits as 'exactly the kind of person who makes this job difficult.' The clip has thirty-one million views. The voter has done six interviews.",
+   choices:[
+     {lbl:'Apologise fully and immediately',desc:'Own it. Some respect the honesty.',fx:{wc:+3,mc:+2,pen:+2,u35:+3,unity:-4}},
+     {lbl:'Explain the comment was misheard',desc:'It wasn\'t. Everyone knows it wasn\'t.',fx:{wc:-9,mc:-6,pen:-7,u35:-8,unity:-3}},
+     {lbl:'Apologise then change the subject fast',desc:'Classic damage limitation.',fx:{wc:-2,mc:-1,pen:-2,u35:-2,unity:-2}},
+   ]},
+  {id:'grenfell_memorial',tag:'Social Justice',
+   hl:"GRENFELL MEMORIAL DEBATE: FAMILIES DEMAND ACCOUNTABILITY; GOVERNMENT PROMISES ACTION",
+   story:"A parliamentary debate on the Grenfell memorial and outstanding accountability recommendations drew cross-party support for the families' demands. The government promised 'decisive action on the remaining recommendations.' Seven have been outstanding for four years.",
+   choices:[
+     {lbl:'Full implementation — all recommendations',desc:'Do it all. No more delays.',fx:{wc:+8,u35:+7,mc:+4,pen:+5,deficit:+.5}},
+     {lbl:'Prioritised implementation',desc:'Most recommendations, phased.',fx:{wc:+3,u35:+3,mc:+2,pen:+3}},
+     {lbl:'Further review',desc:'The families have heard this before.',fx:{wc:-10,u35:-8,mc:-5,pen:-7,unity:-4}},
+   ]},
+
+  {id:'scotref',tag:'Devolution',
+   hl:"HOLYROOD VOTES FOR SECOND INDEPENDENCE REFERENDUM; WESTMINSTER SAYS 'NOT NOW'",
+   story:"The Scottish Parliament passed a motion calling for a second independence referendum by sixty-eight votes to sixty-one. The First Minister described the vote as 'a mandate of historic proportions.' The Prime Minister said it was 'noted.' The constitutional impasse, noted since 2014, continued being noted.",
+   choices:[
+     {lbl:'Grant a section 30 order',desc:'Let Scotland vote. The Union may not survive it.',fx:{mc:+3,u35:+4,pen:-7,wc:-4,unity:-12}},
+     {lbl:'Refuse and hold the line',desc:'Constitutional blockade. Adds grievance.',fx:{pen:+5,mc:+3,wc:+2,u35:-6,unity:-6}},
+     {lbl:'Offer a devolution settlement instead',desc:'More powers, not independence. May satisfy nobody.',fx:{mc:+2,u35:+2,pen:+1,unity:-3}},
+   ]},
+  {id:'defencespend',tag:'Defence',
+   hl:"NATO SECRETARY GENERAL 'CONCERNED' BY UK DEFENCE SPENDING; USES POLITE DIPLOMATIC VOICE",
+   story:"The NATO Secretary General expressed 'concern' at Britain's defence spending trajectory at a Brussels summit. The Defence Secretary said Britain remained 'deeply committed' to the alliance. The Secretary General nodded in the way diplomats nod when they mean 'I don't believe you.'",
+   choices:[
+     {lbl:'Commit to 2.5% of GDP',desc:'Costs serious money. NATO relieved.',fx:{uc:+4,mc:+3,pen:+5,deficit:+1.4}},
+     {lbl:'Maintain current trajectory',desc:'Existing plans. NATO continues to be concerned.',fx:{}},
+     {lbl:'Announce a defence review',desc:'Classic delay mechanism. Buys eighteen months.',fx:{mc:+1,pen:+1,unity:-2}},
+   ]},
+  {id:'prisoncrisis',tag:'Criminal Justice',
+   hl:"PRISONS 102% CAPACITY; JUSTICE SECRETARY CONFIRMS MEANING OF PERCENTAGE",
+   story:"Ministry of Justice figures show prisons at one hundred and two percent capacity. Judges in three circuits have been informally asked to consider sentencing alternatives. The Justice Secretary confirmed in a select committee that one hundred and two is more than one hundred. A relief to know.",
+   choices:[
+     {lbl:'Emergency early release scheme',desc:'Pressure off. Headlines about who is released.',fx:{wc:-5,pen:-7,mc:-3,crime:+4}},
+     {lbl:'Rapid prison building programme',desc:'Very expensive. Takes years.',fx:{pen:+4,mc:+2,uc:+3,deficit:+1.3}},
+     {lbl:'Sentencing reform — fewer short terms',desc:'Evidence-based. Tabloids furious.',fx:{u35:+5,mc:+3,wc:-6,pen:-8,crime:-3}},
+   ]},
+  {id:'nimbybill',tag:'Housing',
+   hl:"PLANNING REFORM BILL: HOUSEBUILDERS CHEER; NIMBY CONSTITUENCY ASSOCIATIONS REVOLT",
+   story:"The Planning Reform Bill passed second reading, unlocking development on parts of the green belt. The Home Builders Federation called it 'transformative.' Forty-one Conservative-adjacent constituency associations passed motions of no confidence in the principle of building anything near them.",
+   choices:[
+     {lbl:'Push the bill through in full',desc:'Get houses built. Lose the home counties.',fx:{u35:+8,wc:+6,mc:-3,uc:-7,pen:-5,unity:-6}},
+     {lbl:'Soften with rural protections',desc:'Compromise. Builds fewer homes more slowly.',fx:{u35:+3,wc:+3,mc:-1,pen:-1,unity:-2}},
+     {lbl:'Abandon the bill',desc:'Nothing changes. Nothing is built.',fx:{u35:-7,wc:-5,mc:+2,pen:+3,uc:+4,unity:+4}},
+   ]},
+  {id:'tradewar',tag:'Foreign Affairs',
+   hl:"US TARIFFS HIT UK EXPORTS; SPECIAL RELATIONSHIP DESCRIBED AS 'ONGOING'",
+   story:"Washington imposed thirty percent tariffs on British steel, pharmaceuticals and cars following trade negotiations that stalled in February. Downing Street called the relationship 'strong and enduring.' The tariffs remain. The steel industry described the situation as 'something the government might want to take seriously.'",
+   choices:[
+     {lbl:'Retaliate with counter-tariffs',desc:'Hits back. Escalation risk real.',fx:{uc:-4,mc:-3,wc:-2,gdp:-.12,u35:+3}},
+     {lbl:'Negotiate urgently',desc:'Seek resolution. May take months.',fx:{uc:+2,mc:+2,gdp:-.05}},
+     {lbl:'Pivot to EU trade talks',desc:'Post-Brexit re-alignment. Long game.',fx:{u35:+5,mc:+3,pen:-5,wc:-2,gdp:+.06}},
+   ]},
+  {id:'ambulancestrike',tag:'Industrial Action',
+   hl:"AMBULANCE WORKERS WALK OUT; NHS ENGLAND ACTIVATES CONTINGENCY; CONTINGENCY IS 'HOPE'",
+   story:"GMB and UNISON ambulance members began indefinite industrial action after the government's final pay offer of 4.8% was described by union reps as 'insulting in all the ways that matter.' NHS England activated its major incident response plan. The plan involves asking off-duty staff nicely.",
+   choices:[
+     {lbl:'Meet the pay demand in full',desc:'Ends the strike. Sets a precedent.',fx:{wc:+9,mc:+4,u35:+6,pen:+7,deficit:+.7,unity:+3}},
+     {lbl:'Compulsory minimum service',desc:'Keep ambulances running legally.',fx:{wc:-11,u35:-9,mc:-4,pen:-5,unity:-7}},
+     {lbl:'Improved offer — 6.5%',desc:'Better but probably not enough.',fx:{wc:+2,u35:+2,mc:+1,deficit:+.3}},
+   ]},
+  {id:'universalcredit',tag:'Welfare',
+   hl:"UNIVERSAL CREDIT FIVE-WEEK WAIT 'DRIVING DEBT', SAYS EVERY CHARITY SIMULTANEOUSLY",
+   story:"A coalition of forty-three charities jointly published a report on the five-week wait for Universal Credit. The report used the phrase 'driving debt and destitution' seventeen times. The DWP said the system was 'working as designed,' which the charities said was the problem.",
+   choices:[
+     {lbl:'Scrap the five-week wait',desc:'Replace with advances. Costs around £2bn.',fx:{wc:+10,u35:+7,mc:+4,pen:+5,deficit:+.9}},
+     {lbl:'Expand advance payments',desc:'Better loans, faster. Still a loan.',fx:{wc:+4,u35:+3,mc:+2,deficit:+.3}},
+     {lbl:'Defend the existing design',desc:'\'It encourages engagement with work.\'',fx:{wc:-9,u35:-7,mc:-4,pen:-5,uc:+3}},
+   ]},
+  {id:'chineseinvest',tag:'Foreign Affairs',
+   hl:"CHINESE STATE FIRM BIDS FOR UK WATER UTILITY; SECURITY SERVICES REQUEST A WORD",
+   story:"Shengda Infrastructure Holdings submitted a bid for Southern Water. GCHQ requested a meeting with the Cabinet Office. The meeting was described as 'constructive.' Shengda's bid remains live. The Cabinet Office has not confirmed what was constructed.",
+   choices:[
+     {lbl:'Block the bid on security grounds',desc:'Clear. China will express displeasure.',fx:{uc:+2,mc:+3,pen:+4,u35:+3,gdp:-.06}},
+     {lbl:'Permit with enhanced oversight',desc:'Money in, strings attached. Strings are thin.',fx:{uc:+4,mc:+2,gdp:+.06,u35:-4}},
+     {lbl:'Nationalise the utility instead',desc:'Sidestep the problem. Expensive.',fx:{wc:+6,u35:+5,uc:-7,mc:-2,deficit:+1.0}},
+   ]},
+  {id:'transrights',tag:'Culture',
+   hl:"GENDER RECOGNITION REFORM: GOVERNMENT ANNOUNCES POLICY; EVERYONE ARGUES",
+   story:"The government published its Gender Recognition Act reform position paper. Within six hours, nineteen columnists had written about it, fourteen of them had written the opposite of the other fourteen, and the minister responsible had done four radio interviews explaining a document no one had read.",
+   choices:[
+     {lbl:'Strengthen trans rights',desc:'Self-ID reform.',fx:{u35:+9,mc:+2,wc:-3,pen:-8,unity:-8,division:+4}},
+     {lbl:'Status quo with clarifications',desc:'Satisfy no one consistently.',fx:{u35:-3,pen:-2,wc:-2,unity:-4,division:+2}},
+     {lbl:'Restrict GRA access',desc:'Firmer medicalised gatekeeping.',fx:{pen:+7,wc:+3,u35:-11,mc:-3,unity:-7,division:+5}},
+   ]},
+  {id:'pressbriefing',tag:'Politics',
+   hl:"PM'S PRESS SECRETARY RESIGNS LIVE ON TWITTER; GOVERNMENT REQUESTS PEOPLE 'NOT OVERREACT'",
+   story:"The Downing Street Director of Communications resigned via a twelve-tweet thread at 11:47pm, citing 'irreconcilable differences regarding the basic concept of honesty.' The thread received 2.4 million likes. Number Ten asked journalists not to 'overinterpret' a resignation statement that was, by word count, mostly interpretation.",
+   choices:[
+     {lbl:'Rapid appointment, say nothing more',desc:'Move on fast.',fx:{unity:+3,mc:-2,u35:-3}},
+     {lbl:'Deny the substance of the thread',desc:'He wrote it himself.',fx:{wc:-5,u35:-7,mc:-5,unity:-4}},
+     {lbl:'Partial acknowledgement of issues',desc:'Concede something. Limits the damage.',fx:{wc:+2,mc:+2,u35:+3,unity:-2}},
+   ]},
+  {id:'mentalhealth',tag:'Health',
+   hl:"ONE IN FOUR ADULTS EXPERIENCING MENTAL HEALTH CRISIS; NHS WAIT AVERAGES 18 MONTHS",
+   story:"NHS England data shows one in four adults experiencing moderate or severe mental health symptoms. Average wait for a first NHS therapy appointment: eighteen months. The Health Secretary called this 'a priority.' The waiting list called this 'the third time a Health Secretary has called this a priority.'",
+   choices:[
+     {lbl:'Dedicated mental health funding surge',desc:'Real money, ring-fenced.',fx:{u35:+8,wc:+6,mc:+5,pen:+4,deficit:+.8}},
+     {lbl:'Integrate into NHS Long-Term Plan',desc:'Structural reform, slower.',fx:{u35:+4,wc:+3,mc:+3,pen:+2,deficit:+.3}},
+     {lbl:'Announce a strategy',desc:'A document. With a title.',fx:{u35:-5,wc:-4,mc:-4,pen:-3}},
+   ]},
+  {id:'austerityleak',tag:'Economy',
+   hl:"TREASURY DOCUMENT: 'EXTENSIVE CUTS' PLANNED POST-ELECTION; CHANCELLOR SAYS 'PARTIAL DRAFT'",
+   story:"A Treasury working document obtained by the Guardian outlines cuts to public services totalling £28 billion following the election. The Chancellor described it as 'a partial draft exploring options.' The document contained an executive summary, fifteen appendices, and a contents page.",
+   choices:[
+     {lbl:'Deny and suppress',desc:'The document exists.',fx:{wc:-8,u35:-7,mc:-5,pen:-6,unity:-5}},
+     {lbl:'Own it — frame as responsible planning',desc:'Honesty as strategy.',fx:{wc:-3,mc:+2,uc:+4,u35:-3,unity:+3}},
+     {lbl:'Pivot to a spending announcement',desc:'Counter-programme immediately.',fx:{wc:+3,mc:+2,u35:+3,deficit:+.5,unity:-2}},
+   ]},
+  {id:'foodstandards',tag:'Trade',
+   hl:"POST-BREXIT TRADE DEAL REQUIRES LOWER FOOD STANDARDS; MINISTER SAYS 'NUANCED PICTURE'",
+   story:"A leaked annex to an ongoing trade negotiation reveals provisions that would permit hormone-treated beef and chlorine-washed chicken from the United States. The Trade Minister called it 'a nuanced picture.' The National Farmers Union called it fourteen other things.",
+   choices:[
+     {lbl:'Reject lower standards — walk away',desc:'Protects standards. No deal.',fx:{wc:+5,mc:+4,pen:+6,u35:+4,uc:-3,gdp:-.08}},
+     {lbl:'Accept the deal — labelling rules',desc:'Label it clearly and let consumers decide.',fx:{uc:+4,mc:-2,wc:-6,pen:-5,gdp:+.05}},
+     {lbl:'Renegotiate the food annex',desc:'Delay. May not be possible.',fx:{mc:+2,wc:+2,pen:+3,gdp:-.03}},
+   ]},
+  {id:'policeracism',tag:'Social Justice',
+   hl:"MET POLICE REPORT: INSTITUTIONAL RACISM 'PERSISTENT AND DOCUMENTED'; COMMISSIONER RESIGNS",
+   story:"A government-commissioned report into Metropolitan Police culture found institutional racism 'persistent, documented, and inadequately addressed' over a twenty-year period. The Commissioner resigned before the report's publication, citing health reasons. The health reasons were not specified.",
+   choices:[
+     {lbl:'Root and branch reform — independent oversight',desc:'Structural accountability.',fx:{u35:+9,wc:+6,mc:+3,pen:-3,crime:+2}},
+     {lbl:'Appoint a reform commissioner',desc:'One person. Real powers.',fx:{u35:+5,wc:+4,mc:+2}},
+     {lbl:'Accept report, promise action, move on',desc:'Classic.',fx:{u35:-7,wc:-5,mc:-3,pen:+2,unity:-3}},
+   ]},
+  {id:'curriculumreform',tag:'Education',
+   hl:"NATIONAL CURRICULUM REVIEW: EVERY STAKEHOLDER DISAGREES WITH EVERY OTHER STAKEHOLDER",
+   story:"The government's National Curriculum review, two years in the making, published its interim recommendations. Teachers' unions, exam boards, parent groups, and university admissions bodies all issued statements within the hour. None of them agreed. One statement disagreed with itself in two separate paragraphs.",
+   choices:[
+     {lbl:'Adopt the recommendations in full',desc:'Bold. Generates enormous administrative chaos.',fx:{u35:+4,wc:+3,mc:+4,deficit:+.4,unity:-5}},
+     {lbl:'Phased adoption over five years',desc:'Slower. Most of the chaos still arrives.',fx:{u35:+2,mc:+3,wc:+2,deficit:+.2}},
+     {lbl:'Further consultation period',desc:'Eighth consultation since 2015.',fx:{u35:-3,mc:-2,wc:-3,pen:-2}},
+   ]},
+  {id:'potholes',tag:'Infrastructure',
+   hl:"LOCAL ROADS SURVEY: 1 IN 3 ROADS IN 'POOR CONDITION'; AA CALLS IT A 'NATIONAL EMBARRASSMENT'",
+   story:"The RAC Foundation annual survey found a third of British roads in poor condition, with repair backlogs estimated at £16.3 billion. A pothole in Worcestershire measuring two metres across has its own Wikipedia entry and a TripAdvisor listing.",
+   choices:[
+     {lbl:'National road repair fund',desc:'Dedicate serious money to maintenance.',fx:{wc:+5,mc:+4,pen:+5,u35:+3,deficit:+.7}},
+     {lbl:'Devolve responsibility to councils',desc:'Their problem now.',fx:{wc:-4,pen:-5,mc:-3}},
+     {lbl:'Launch a consultation',desc:'The potholes will wait.',fx:{wc:-3,pen:-4,mc:-2}},
+   ]},
+];
+
+// ─── CRIME-CONDITIONAL EVENTS ─────────────────────────────────
+const CRIME_EVENTS=[
+  {id:'streetCrime',tag:'Public Safety',minCrime:45,
+   hl:"STREET CRIME WAVE SWEEPS MAJOR CITIES; POLICE 'STRETCHED'",
+   story:"Muggings and street robbery have risen 34% year-on-year across six major cities. The Met Commissioner says officers are 'stretched.' A tabloid columnist has suggested people walk faster. Neither response is policy.",
+   choices:[
+     {lbl:'Emergency police surge',desc:'Deploy extra officers to hotspots. Expensive.',fx:{wc:+5,pen:+6,mc:+4,deficit:+.5,crime:-6}},
+     {lbl:'Community intervention programmes',desc:'Youth outreach, diversionary schemes.',fx:{u35:+4,wc:+2,deficit:+.3,crime:-2}},
+     {lbl:'Announce a review',desc:'Commission one. Crime continues in the meantime.',fx:{wc:-5,pen:-7,crime:+3}},
+   ]},
+  {id:'prisonOvercrowd',tag:'Criminal Justice',minCrime:50,
+   hl:"PRISONS AT 99% CAPACITY; JUSTICE SECRETARY CONFIRMS 'MANAGEABLE'",
+   story:"HM Prison Service reports ninety-nine percent occupancy across the estate. The Justice Secretary has used the word 'manageable' twice. Inmates are being housed in police cells. Police are being housed in paperwork.",
+   choices:[
+     {lbl:'Build two new prisons',desc:'Long-term fix. Very expensive.',fx:{pen:+5,mc:+3,deficit:+1.0,crime:-4}},
+     {lbl:'Early release scheme',desc:'Non-violent offenders released early. Tabloids will notice.',fx:{wc:-4,pen:-8,mc:-3,crime:-5}},
+     {lbl:'Rehabilitation fast-track',desc:'Intensive programmes — expensive but reduces reoffending.',fx:{u35:+3,deficit:+.6,crime:-3}},
+   ]},
+  {id:'countyLines',tag:'Public Safety',minCrime:55,
+   hl:"COUNTY LINES DRUG NETWORKS EXPAND; 47 ARRESTS — 'TIP OF ICEBERG', SAY POLICE",
+   story:"National Crime Agency reports county lines drug networks have expanded to thirty-two counties. Forty-seven arrests were made in a coordinated operation described by police as 'the tip of the iceberg.' The iceberg appears unperturbed.",
+   choices:[
+     {lbl:'Expand NCA funding',desc:'More resources for organised crime.',fx:{pen:+4,mc:+3,biz:+2,deficit:+.4,crime:-5}},
+     {lbl:'Harm reduction approach',desc:'Treatment, not just enforcement.',fx:{u35:+5,wc:+3,pen:-4,crime:-3}},
+     {lbl:'Cross-border enforcement push',desc:'Work with neighbouring forces.',fx:{pen:+3,wc:+2,crime:-4}},
+   ]},
+  {id:'knifeCrime',tag:'Public Safety',minCrime:60,
+   hl:"KNIFE CRIME MEMORIAL MARCH: THOUSANDS GATHER IN LONDON",
+   story:"Thousands gathered in Parliament Square to mark the anniversary of a series of fatal stabbings. The Home Secretary attended. Protesters asked what had changed. The Home Secretary said 'a great deal.' Protesters did not agree.",
+   choices:[
+     {lbl:'Knife crime emergency bill',desc:'New offences, longer sentences, stop & search expansion.',fx:{pen:+7,wc:+5,mc:+4,u35:-5,crime:-5}},
+     {lbl:'£500m Violence Reduction Fund',desc:'Long-term investment in prevention.',fx:{wc:+5,u35:+4,deficit:+.5,crime:-4}},
+     {lbl:'Express condolences and move on',desc:'No new policy. Mourners notice.',fx:{wc:-8,pen:-9,u35:-6,mc:-5,crime:+2}},
    ]},
 ];
 
@@ -866,6 +1236,90 @@ const CONSEQUENCE_RULES=[
    hl:'RECORD POLICE RECRUITMENT; CRIME STATISTICS SHOW EARLY IMPROVEMENT'},
   {id:'welfCut', cooldown:3, check:g=>getNHSSpend({pol:g.pol})+getWelfSpend({pol:g.pol})<25,
    hl:'CHARITIES WARN OF "WELFARE EMERGENCY" AS CUTS BITE SIMULTANEOUSLY'},
+  {id:'crimeHigh', cooldown:3, check:g=>g.crime>65,
+   hl:'CRIME STATISTICS: HIGHEST IN A DECADE; OPPOSITION CALLS FOR HOME SECRETARY TO RESIGN'},
+  {id:'crimeVeryHigh', cooldown:2, check:g=>g.crime>78,
+   hl:'LAW AND ORDER COLLAPSE FEARED AS CRIME HITS RECORD; PM DENIES "LOSS OF CONTROL"'},
+  {id:'crimeLow', cooldown:5, check:g=>g.crime<20,
+   hl:'CRIME FALLS TO LOWEST LEVEL SINCE 1990s; GOVERNMENT CLAIMS FULL CREDIT'},
+  {id:'divisionHigh', cooldown:3, check:g=>g.division>55,
+   hl:'BRITAIN MORE DIVIDED THAN EVER, SURVEY FINDS; POLITICIANS AGREE TO DISAGREE'},
+  {id:'divisionVeryHigh', cooldown:2, check:g=>g.division>72,
+   hl:'SOCIAL FABRIC FRAYING: RECORD HATE INCIDENTS, COMMUNITY BREAKDOWN WARNED'},
+  {id:'divisionExtreme', cooldown:2, check:g=>g.division>88,
+   hl:'COUNTRY ON THE BRINK: ANALYSTS WARN OF DEMOCRATIC BREAKDOWN AS POLARISATION PEAKS'},
+  {id:'pressFreedomLow', cooldown:4, check:g=>g.media&&g.media.pressFreedom<45,
+   hl:'PRESS FREEDOM INDEX: UK FALLS TO RECORD LOW; RSF ISSUES FORMAL WARNING'},
+  {id:'pressFreedomCollapse', cooldown:3, check:g=>g.media&&g.media.pressFreedom<22,
+   hl:'UN HUMAN RIGHTS BODY CONDEMNS UK MEDIA SUPPRESSION; INTERNATIONAL ISOLATION FEARED'},
+  {id:'vatHigh', cooldown:4, check:g=>g.pol.vat>23,
+   hl:'VAT RISE HITS SHOPS; RETAIL SECTOR WARNS OF "CONSUMER CLIFF EDGE"'},
+  {id:'itBasicHigh', cooldown:4, check:g=>g.pol.itBasic>28,
+   hl:'BASIC RATE RISE: WORKERS PAY MORE; PM INSISTS "NECESSARY FOR STABILITY"'},
+  {id:'itHigherMax', cooldown:4, check:g=>g.pol.itHigher>48,
+   hl:'70p TAX RATE RETURNS; CITY WARNS OF "BRAIN DRAIN"; LEFT WING UNCONVINCED'},
+  {id:'niHigh', cooldown:4, check:g=>g.pol.ni>16,
+   hl:'NI RISE: "TAX ON JOBS," SAYS CBI; "TAX ON FAIRNESS NOT TO," SAYS TUC'},
+  {id:'educCut', cooldown:4, check:g=>g.pol.educ<12,
+   hl:'SCHOOLS FACE 15% REAL-TERMS CUT; HEAD TEACHERS DESCRIBE SITUATION AS "CRISIS"'},
+  {id:'educHigh', cooldown:5, check:g=>g.pol.educ>20,
+   hl:'RECORD EDUCATION SPENDING ANNOUNCED; OFSTED TOLD TO EXPECT "REVOLUTION"'},
+  {id:'housCut', cooldown:4, check:g=>g.pol.hous<4,
+   hl:'HOUSING BUDGET SLASHED; SHELTER WARNS OF "HOMELESSNESS SURGE"'},
+  {id:'housingHigh', cooldown:5, check:g=>g.pol.hous>12,
+   hl:'HOUSING INVESTMENT AT RECORD HIGH; BUILDERS SHARE PRICE RISES 8%'},
+  {id:'gdpShrink', cooldown:3, check:g=>g.gdp<-2.5,
+   hl:'ECONOMY SHRINKS 2.5%; CHANCELLOR IN "EMERGENCY DISCUSSIONS" WITH BANK'},
+  {id:'unempLow', cooldown:4, check:g=>g.unemp<3.5,
+   hl:'UNEMPLOYMENT HITS 50-YEAR LOW; WAGES RISING; GOVERNMENT TAKES FULL CREDIT'},
+  {id:'unityHigh', cooldown:5, check:g=>g.unity>85,
+   hl:'GOVERNMENT "MOST UNITED IN A GENERATION" — POLL; WHIP ALLOWS HERSELF A SMILE'},
+  {id:'debtVeryHigh', cooldown:3, check:g=>g.debt>130,
+   hl:'DEBT PASSES 130% OF GDP; IMF REQUESTS MEETING; CHANCELLOR OBLIGES NERVOUSLY'},
+  {id:'deficitHigh', cooldown:3, check:g=>g.deficit>5,
+   hl:'DEFICIT AT POST-WAR HIGH; TREASURY LEAKS DESCRIBE "EXTREMELY DIFFICULT CHOICES"'},
+  {id:'inflLow', cooldown:5, check:g=>g.inflation<2,
+   hl:'INFLATION FALLS TO 1.8%; BANK CONSIDERS RATE CUTS; ECONOMY DOING SOMETHING RIGHT'},
+  {id:'infraComplete', cooldown:6, check:g=>g.infra&&g.infra.completed.length>=3,
+   hl:'THIRD MAJOR INFRASTRUCTURE PROJECT COMPLETE; PM ATTENDS RIBBON-CUTTING'},
+  {id:'socialCareLow', cooldown:3, check:g=>g.pol.socialCare<3,
+   hl:'SOCIAL CARE COLLAPSE: 1.2M ELDERLY WAITING FOR ASSESSMENT; FAMILIES "DESPERATE"'},
+  {id:'drugsProp', cooldown:5, check:g=>g.soc&&g.soc.drugs==='legalise',
+   hl:'CANNABIS LEGALISATION: HIGH STREET DISPENSARIES OPEN; TABLOIDS DIVIDED'},
+  {id:'immigNearZero', cooldown:4, check:g=>g.soc&&g.soc.immigration==='nearzero',
+   hl:'NET MIGRATION FALLS TO NEAR ZERO; HOSPITALITY SECTOR REPORTS STAFF CRISIS'},
+  {id:'immigOpen', cooldown:4, check:g=>g.soc&&g.soc.immigration==='open',
+   hl:'OPEN BORDERS POLICY: RECORD ARRIVALS; HOME SECRETARY DESCRIBES THIS AS "MANAGED"'},
+  {id:'defenceHigh', cooldown:5, check:g=>g.pol.def>14,
+   hl:'UK DEFENCE SPENDING AT POST-COLD WAR HIGH; ARMED FORCES "CAUTIOUSLY OPTIMISTIC"'},
+  {id:'disabilityLow', cooldown:3, check:g=>g.pol.disability<3,
+   hl:'DISABILITY BENEFIT CUTS: CHARITIES WARN OF 600,000 LOSING SUPPORT'},
+  {id:'foreignAidHigh', cooldown:5, check:g=>g.pol.foreignAid>5,
+   hl:'UK FOREIGN AID RESTORED TO 0.7% GNI; UN SECRETARY GENERAL SENDS PERSONAL NOTE'},
+  {id:'artsHigh', cooldown:5, check:g=>g.pol.arts>4,
+   hl:'ARTS INVESTMENT BOOM: WEST END AT FULL CAPACITY; BRITISH FILM NOMINATED FOR PALME D\'OR'},
+  {id:'jsaHigh', cooldown:5, check:g=>g.pol.jsa>9,
+   hl:'BENEFITS RISE ABOVE INFLATION FOR FIRST TIME SINCE 2010; POVERTY CHARITIES RESPOND WARMLY'},
+  {id:'housingBenHigh', cooldown:5, check:g=>g.pol.housingBen>8,
+   hl:'HOUSING BENEFIT EXPANSION KEEPS 180,000 FAMILIES IN HOMES, REPORT FINDS'},
+  {id:'unempVeryHigh', cooldown:3, check:g=>g.unemp>9,
+   hl:'UNEMPLOYMENT PASSES 9%; HIGHEST SINCE EARLY 1990s; GOVERNMENT BLAMES "STRUCTURAL FACTORS"'},
+  {id:'inflationDeflation', cooldown:4, check:g=>g.inflation<0,
+   hl:'DEFLATION: PRICES FALLING FOR FIRST TIME IN 25 YEARS; ECONOMISTS DISAGREE IF THIS IS GOOD'},
+  {id:'unityCollapse', cooldown:3, check:g=>g.unity<25,
+   hl:'CABINET IN OPEN REVOLT: THREE MINISTERS REFUSE TO ATTEND WEEKLY MEETING'},
+  {id:'crimeExtreme', cooldown:2, check:g=>g.crime>88,
+   hl:'NATIONAL EMERGENCY: PM CONVENES COBRA; POLICE CHIEFS SAY SITUATION "WITHOUT PRECEDENT"'},
+  {id:'socialCareHigh', cooldown:5, check:g=>g.pol.socialCare>8,
+   hl:'SOCIAL CARE INVESTMENT: WAITING LISTS FALLING; FAMILIES REPORT "NIGHT AND DAY" DIFFERENCE'},
+  {id:'childBenLow', cooldown:4, check:g=>g.pol.childBen<2,
+   hl:'CHILD POVERTY RATE HITS 31%; UNICEF ADDS UK TO WATCHLIST; PM DISPUTES METHODOLOGY'},
+  {id:'rehabWorking', cooldown:5, check:g=>g.rehabMonths>8&&g.crime<40,
+   hl:'REHABILITATION PROGRAMME SHOWS RESULTS: REOFFENDING RATE FALLS FOR FIRST TIME'},
+  {id:'irLow', cooldown:5, check:g=>g.pol.ir<3,
+   hl:'INTEREST RATES AT HISTORIC LOW; MORTGAGE APPROVALS SURGE; HOUSE PRICES TOO'},
+  {id:'childBenHigh', cooldown:4, check:g=>g.pol.childBen>5,
+   hl:'EXPANDED CHILD BENEFIT REACHES 4 MILLION FAMILIES; CHILD POVERTY FIGURES IMPROVE'},
 ];
 // ═══════════════════════════════════════════════════════════════
 // SECTION 2: STATE
@@ -878,10 +1332,17 @@ function getSpendTotal(){const p=G.pol;return p.nhsStaff+p.nhsCapital+p.socialCa
 
 function freshState(leaderName,partyName,alignKey){
   const a=ALIGNMENTS[alignKey];const s=a.s;
+  // Build factions from FACTIONS_DEF + alignment starting approvals
+  const factions={};
+  for(const[grp,defs] of Object.entries(FACTIONS_DEF)){
+    const apArr=a.fac[grp];
+    factions[grp]=defs.map((d,i)=>({id:d.id,ideo:d.ideo,w:d.w,approval:apArr[i]}));
+  }
+  const dem=recomputeDemFrom(factions);
   return {leaderName,partyName,alignKey,
     month:0,year:2024,turn:1,
     inflation:s.inflation,ir:s.ir,gdp:s.gdp,unemp:s.unemp,debt:s.debt,deficit:s.deficit,
-    dem:{wc:s.dem.wc,mc:s.dem.mc,pen:s.dem.pen,u35:s.dem.u35,biz:s.dem.biz},
+    dem,factions,
     pol:{ir:s.ir,itBasic:s.itBasic,itHigher:s.itHigher,corp:s.corp,vat:s.vat,ni:s.ni,
          nhsStaff:s.nhsStaff,nhsCapital:s.nhsCapital,socialCare:s.socialCare,
          jsa:s.jsa,housingBen:s.housingBen,disability:s.disability,childBen:s.childBen,
@@ -896,10 +1357,57 @@ function freshState(leaderName,partyName,alignKey){
     infra:{active:[],completed:[]},
     infraBonuses:{},
     consequenceCooldowns:{},
+    crime:s.crime||42,
+    rehabMonths:0,
+    division:s.division||20,
+    media:{stance:'neutral',spend:3,pressFreedom:80,storyCooldowns:{}},
+    assassination:{state:null,firedThisTerm:false},
+    pmWounded:false,
   };
 }
 
-function getApproval(){const d=G.dem;return Math.round(.25*d.wc+.30*d.mc+.20*d.pen+.15*d.u35+.10*d.biz);}
+function recomputeDemFrom(factions){
+  const d={};
+  for(const[g,subs] of Object.entries(factions))
+    d[g]=Math.round(subs.reduce((s,f)=>s+f.approval*f.w,0));
+  return d;
+}
+function recomputeDem(){G.dem=recomputeDemFrom(G.factions);}
+
+// Apply delta uniformly to all subfactions in a group (economic/mechanical effects)
+function applyDemUniform(grp,delta){
+  if(!G.factions[grp]) return;
+  for(const s of G.factions[grp]) s.approval=clamp(s.approval+delta,5,95);
+}
+
+// Apply delta with ideology distribution (policy/event effects)
+// lean: -5 (hard left) to +5 (hard right) — ideologically aligned subfactions respond more
+function applyDemEffect(grp,delta,lean=0){
+  if(!G.factions[grp]) return;
+  for(const s of G.factions[grp]){
+    const modifier=lean===0?1:1+(lean*s.ideo/25)*0.35;
+    s.approval=clamp(Math.round(s.approval+delta*modifier),5,95);
+  }
+}
+
+// Apply a full fx object (from events/crises/policies) to factions + econ state
+function applyFx(fx,lean=0){
+  const GROUPS=new Set(['wc','mc','pen','u35','uc','biz']);
+  for(const[k,v] of Object.entries(fx)){
+    const grp=k==='biz'?'uc':k;
+    if(GROUPS.has(k))       applyDemEffect(grp,v,lean);
+    else if(k==='deficit')  G.deficit=rnd1(G.deficit+v);
+    else if(k==='debt')     G.debt=rnd1(G.debt+v);
+    else if(k==='gdp')      G.gdp=rnd1(clamp(G.gdp+v,-5,8));
+    else if(k==='inflation')G.inflation=rnd1(Math.max(0,G.inflation+v));
+    else if(k==='unemp')    G.unemp=rnd1(clamp(G.unemp+v,2,12));
+    else if(k==='unity')    G.unity=clamp(G.unity+v,20,100);
+    else if(k==='crime')    G.crime=rnd1(clamp(G.crime+v,0,100));
+  }
+  recomputeDem();
+}
+
+function getApproval(){const d=G.dem;return Math.round(.25*d.wc+.30*d.mc+.20*d.pen+.15*d.u35+.10*d.uc);}
 function getMP(id){return MP_POOL.find(m=>m.id===id);}
 function getCabMP(role){return G.cab[role]?getMP(G.cab[role]):null;}
 function cabinetCompetence(role){const mp=getCabMP(role);return mp?mp.comp:4;}
@@ -957,67 +1465,73 @@ function simulateMonth(){
   const ideoMismatch=computeIdeoMismatch();
   G.unity=clamp(Math.round(G.unity+whipComp/20-ideoMismatch*2+rand(-1,1)),20,100);
 
-  // ── BASE ECONOMIC MOOD (weak background drift) ──
-  const econMood=G.gdp>1.5?0.5:(G.gdp<0?-1:0);
-  const unempMood=G.unemp<4?0.5:(G.unemp>6?-1:0);
+  // ── Economic mood ──
+  const gdpMood=clamp((G.gdp-1.0)*0.8,-2.5,2.5);
+  const inflMood=clamp((3.0-G.inflation)*0.5,-2.5,1.5);
+  const unempMood=clamp((5.0-G.unemp)*0.6,-2.5,1.5);
+  const econReward=gdpMood+inflMood+unempMood;
   applySocialPolicyEffects();
-  Object.keys(G.dem).forEach(k=>{
-    G.dem[k]=clamp(Math.round(G.dem[k]+rand(-0.5,0.5)+econMood*0.3+unempMood*0.2),5,95);
-  });
+  for(const g of ['wc','mc','pen','u35','uc'])
+    applyDemUniform(g,Math.round(rand(-0.5,0.5)+econReward*0.25));
 
-  // ── DIRECT INFLATION APPROVAL HIT ──
-  // This is the main mechanic — high inflation directly crushes living standards approval
-  // Kicks in above 3%, accelerates above 6%, brutal above 9%
+  // ── INFLATION PAIN ──
   const inflBase=Math.max(0,G.inflation-3);
-  const inflPain=inflBase*0.6 + Math.max(0,G.inflation-6)*0.9 + Math.max(0,G.inflation-9)*1.5;
+  const inflPain=inflBase*0.6+Math.max(0,G.inflation-6)*0.9+Math.max(0,G.inflation-9)*1.5;
   if(inflPain>0){
-    G.dem.wc=clamp(Math.round(G.dem.wc-inflPain*1.1),5,95); // cost of living hits wc hardest
-    G.dem.pen=clamp(Math.round(G.dem.pen-inflPain*1.0),5,95); // fixed incomes
-    G.dem.u35=clamp(Math.round(G.dem.u35-inflPain*0.8),5,95); // rents/bills
-    G.dem.mc=clamp(Math.round(G.dem.mc-inflPain*0.6),5,95);
-    G.dem.biz=clamp(Math.round(G.dem.biz-inflPain*0.4),5,95); // input costs
+    applyDemUniform('wc', -Math.round(inflPain*1.1));
+    applyDemUniform('pen',-Math.round(inflPain*1.0));
+    applyDemUniform('u35',-Math.round(inflPain*0.8));
+    applyDemUniform('mc', -Math.round(inflPain*0.6));
+    applyDemUniform('uc', -Math.round(inflPain*0.4));
   }
 
-  // ── DIRECT DEFICIT APPROVAL HIT ──
-  // Markets and middle class hate reckless borrowing; big deficits signal instability
-  const deficitPain=Math.max(0,G.deficit-2.5); // above ~2.5% starts mattering
+  // ── DEFICIT / AUSTERITY PAIN ──
+  const deficitPain=Math.max(0,G.deficit-2.5);
   if(deficitPain>0){
-    G.dem.biz=clamp(Math.round(G.dem.biz-deficitPain*1.2),5,95); // business hates debt
-    G.dem.mc=clamp(Math.round(G.dem.mc-deficitPain*0.7),5,95);
-    G.dem.pen=clamp(Math.round(G.dem.pen-deficitPain*0.5),5,95); // worried about future cuts
+    applyDemUniform('uc', -Math.round(deficitPain*1.2));
+    applyDemUniform('mc', -Math.round(deficitPain*0.7));
+    applyDemUniform('pen',-Math.round(deficitPain*0.5));
   }
-  // But austerity (surplus) also has a cost
   if(G.deficit<-0.5){
     const austerityPain=Math.abs(G.deficit+0.5)*0.4;
-    G.dem.wc=clamp(Math.round(G.dem.wc-austerityPain),5,95);
-    G.dem.u35=clamp(Math.round(G.dem.u35-austerityPain*0.7),5,95);
+    applyDemUniform('wc', -Math.round(austerityPain));
+    applyDemUniform('u35',-Math.round(austerityPain*0.7));
   }
 
-  // ── HIGH INTEREST RATE PAIN ──
-  // High IR hurts mortgages (mc, u35) and business investment
+  // ── HIGH IR PAIN ──
   const irPain=Math.max(0,G.pol.ir-5.5)*0.5;
   if(irPain>0){
-    G.dem.mc=clamp(Math.round(G.dem.mc-irPain*0.9),5,95);
-    G.dem.u35=clamp(Math.round(G.dem.u35-irPain*0.8),5,95);
-    G.dem.biz=clamp(Math.round(G.dem.biz-irPain*0.6),5,95);
+    applyDemUniform('mc', -Math.round(irPain*0.9));
+    applyDemUniform('u35',-Math.round(irPain*0.8));
+    applyDemUniform('uc', -Math.round(irPain*0.6));
   }
 
-  // ── TAX & SPENDING POLICY EFFECTS ──
+  // ── TAX & SPENDING ──
   const nhsT=getNHSSpend();
   const welfT=getWelfSpend();
   const taxPain=clamp((pol.itBasic-20)*0.06,-1.5,2.5);
   const higherPain=clamp((pol.itHigher-40)*0.04,-1.0,2.0);
-  const corpPain=clamp((pol.corp-25)*0.05,-2.0,2.0);
+  const corpPain=clamp((pol.corp-25)*0.07,-2.5,2.5);
+  const niPain=clamp((pol.ni-13)*0.05,-0.8,1.5);
   const welfGap=clamp((18-welfT)*0.10,-2.0,3.5);
   const nhsGap=clamp((22-nhsT)*0.06,-1.0,2.0);
-  G.dem.wc=clamp(Math.round(G.dem.wc-taxPain*0.9-welfGap*1.2-nhsGap*0.7),5,95);
-  G.dem.mc=clamp(Math.round(G.dem.mc-taxPain*0.6-higherPain*0.8-nhsGap*0.5),5,95);
-  G.dem.biz=clamp(Math.round(G.dem.biz-corpPain*1.5+taxPain*0.2),5,95);
-  G.dem.pen=clamp(Math.round(G.dem.pen-taxPain*0.5-welfGap*0.6-nhsGap*0.9),5,95);
-  G.dem.u35=clamp(Math.round(G.dem.u35-taxPain*0.7-welfGap*0.9-nhsGap*0.6),5,95);
+  applyDemUniform('wc', -Math.round(taxPain*0.9+niPain*0.8+welfGap*1.2+nhsGap*0.7));
+  applyDemUniform('mc', -Math.round(taxPain*0.6+higherPain*0.8+niPain*0.5+nhsGap*0.5));
+  applyDemUniform('uc', -Math.round(corpPain*1.8));
+  applyDemUniform('pen',-Math.round(taxPain*0.5+welfGap*0.6+nhsGap*0.9));
+  applyDemUniform('u35',-Math.round(taxPain*0.7+niPain*0.4+welfGap*0.9+nhsGap*0.6));
+
+  recomputeDem();
 
   // Process infrastructure
   processInfra();
+  simulateCrime();
+
+  // Process infrastructure, crime, division
+  processInfra();
+  simulateCrime();
+  simulateDivision();
+  simulateMedia();
 
   // Advance time
   G.month=(G.month+1)%12;
@@ -1068,7 +1582,7 @@ function processInfra(){
         // Apply completion effects
         if(proj.completion){
           for(const[k,v] of Object.entries(proj.completion)){
-            if(G.dem[k]!==undefined) G.dem[k]=clamp(G.dem[k]+v,5,95);
+            if(G.factions[k]) applyDemUniform(k,v); else if(k==='uc'||k==='biz') applyDemUniform('uc',v);
             else if(k==='gdp') G.gdp=rnd1(clamp(G.gdp+v,-5,8));
           }
         }
@@ -1086,6 +1600,197 @@ function processInfra(){
   G.infra.active=G.infra.active.filter(ap=>!toRemove.includes(ap.projectId));
 }
 
+function simulateCrime(){
+  const pol=G.pol;
+  const crime=G.soc.crime;
+
+  // Natural baseline — crime creeps up without active intervention
+  const baseline=+0.6;
+
+  // Police spending — needs higher spend to fully offset baseline
+  const policeFx=-clamp(pol.police*0.22,0,3.0);
+
+  // Unemployment — stronger, kicks in earlier
+  const unempFx=G.unemp>4?+(G.unemp-4)*0.20:0;
+
+  // Inflation drives desperation crime
+  const inflFx=G.inflation>5?+(G.inflation-5)*0.08:0;
+
+  // Infra bonuses
+  const infraFx=(G.infra.completed.includes('socialHousing')?-0.4:0)+
+                (G.infra.completed.includes('newTown')?-0.6:0)+
+                (G.infra.completed.includes('busDev')?-0.3:0);
+
+  // Policy effect — scaled by police spending
+  const spendMult=clamp(pol.police/5,0,1.5);
+  let policyFx=0;
+  if(crime==='zerotol')    policyFx=-2.2*spendMult;
+  else if(crime==='tough') policyFx=-1.6*spendMult;
+  else if(crime==='police')policyFx=-1.2*spendMult;
+  else if(crime==='mixed') policyFx=-0.7*spendMult;
+  else if(crime==='rehab'){
+    G.rehabMonths=(G.rehabMonths||0)+1;
+    if(G.rehabMonths<=6) policyFx=+0.8;
+    else policyFx=-3.5*clamp(pol.police/4,0.5,1.5);
+    G.deficit=rnd1(G.deficit+0.3);
+  }
+
+  if(crime!=='rehab') G.rehabMonths=0;
+
+  // Asymmetric drift — crime more likely to creep up than down
+  const drift=rand(-0.5,0.8);
+  G.crime=rnd1(Math.max(0,G.crime+baseline+policeFx+unempFx+inflFx+infraFx+policyFx+drift));
+
+  // Crime approval penalties — wider threshold, steeper scaling
+  if(G.crime>35){
+    const pain=(G.crime-35)*0.07+Math.max(0,G.crime-60)*0.12+Math.max(0,G.crime-80)*0.18;
+    applyDemUniform('wc', -Math.round(pain*1.3));
+    applyDemUniform('pen',-Math.round(pain*1.2));
+    applyDemUniform('mc', -Math.round(pain*0.8));
+    applyDemUniform('u35',-Math.round(pain*0.7));
+  }
+  recomputeDem();
+}
+
+function simulateDivision(){
+  // ── EXTREMITY SCORE — how extreme are current policies? ──
+  let extremity=0;
+  for(const[key,val] of Object.entries(G.soc)){
+    const opt=SOCIAL_POLICIES[key]?.opts[val];
+    if(opt) extremity+=Math.abs(opt.lean||0)*0.045;
+  }
+  // Economic extremity — far from moderate midpoints
+  const corpExt=Math.abs(G.pol.corp-25)/15*0.3;
+  const itExt=Math.abs(G.pol.itBasic-20)/10*0.2;
+  const irExt=Math.abs(G.pol.itHigher-40)/15*0.15;
+  extremity+=corpExt+itExt+irExt;
+
+  // Crime above 65 feeds resentment
+  const crimeFeed=G.crime>65?(G.crime-65)*0.008:0;
+
+  // Natural decay toward baseline of 20
+  const decay=(G.division-20)*0.04;
+
+  G.division=rnd1(Math.max(0,Math.min(100,G.division+extremity-decay+crimeFeed+rand(-0.2,0.2))));
+
+  // ── WEIGHT SHIFT — moderate subfactions lose ground to extreme ones ──
+  if(G.division>50){
+    const shiftRate=(G.division-50)*0.00008; // ~0.4% per month at division=100
+    for(const subs of Object.values(G.factions)){
+      const moderates=subs.filter(s=>Math.abs(s.ideo)<=1);
+      const extremes=subs.filter(s=>Math.abs(s.ideo)>=3);
+      if(!moderates.length||!extremes.length) continue;
+      const totalShift=moderates.reduce((sum,s)=>{
+        const shift=Math.min(s.w*shiftRate,s.w-0.05); // floor: moderate can't drop below 5%
+        s.w=Math.round((s.w-shift)*1000)/1000;
+        return sum+shift;
+      },0);
+      // Distribute gained weight proportionally to extremes
+      const extremeTotal=extremes.reduce((s,f)=>s+f.w,0);
+      extremes.forEach(s=>{s.w=Math.round((s.w+totalShift*(s.w/extremeTotal))*1000)/1000;});
+      // Renormalise to ensure weights sum to 1
+      const total=subs.reduce((s,f)=>s+f.w,0);
+      subs.forEach(s=>s.w=Math.round(s.w/total*1000)/1000);
+    }
+  }
+
+  // ── APPROVAL POLARISATION — extreme subfactions drift away from group mean ──
+  if(G.division>40){
+    const polStrength=(G.division-40)*0.012;
+    for(const subs of Object.values(G.factions)){
+      const mean=subs.reduce((s,f)=>s+f.approval*f.w,0);
+      for(const sf of subs){
+        if(Math.abs(sf.ideo)<2) continue; // only affects strongly ideological subfactions
+        const pull=sf.approval>mean?+polStrength*Math.abs(sf.ideo):-polStrength*Math.abs(sf.ideo);
+        sf.approval=clamp(Math.round(sf.approval+pull),5,95);
+      }
+    }
+    recomputeDem();
+  }
+
+  // ── CRIME BLEED from very high division ──
+  if(G.division>70) G.crime=rnd1(Math.min(100,G.crime+(G.division-70)*0.004));
+}
+
+function simulateMedia(){
+  const m=G.media;
+  const stance=MEDIA_STANCES[m.stance]||MEDIA_STANCES.neutral;
+  const alignIdeol={hardLeft:-3,centreLeft:-1.5,centre:0,centreRight:1.5,hardRight:3};
+  const playerLean=alignIdeol[G.alignKey]||0;
+  const spendMult=m.spend/5; // spend=5 is baseline
+
+  // Press freedom drain / recovery
+  if(stance.freedomDrain>0)
+    m.pressFreedom=Math.max(0,m.pressFreedom-stance.freedomDrain*spendMult);
+  else
+    m.pressFreedom=Math.min(100,m.pressFreedom+0.8); // recovers slowly under free press
+
+  // Faction approval effect via lean-weighted distribution
+  if(stance.leanMult>0){
+    const effectiveLean=playerLean*stance.leanMult;
+    const mag=1.2*spendMult;
+    for(const[grp,subs] of Object.entries(G.factions)){
+      for(const sf of subs){
+        // Subfactions ideologically aligned with player get a boost, opposed get a penalty
+        const alignment=(sf.ideo*playerLean)/(Math.abs(playerLean)||1);
+        const delta=alignment>0?+mag*stance.leanMult*0.4:-mag*stance.leanMult*0.2;
+        sf.approval=clamp(Math.round(sf.approval+delta),5,95);
+      }
+    }
+    recomputeDem();
+  }
+
+  // Division increase from media stance
+  G.division=Math.min(100,G.division+stance.divMod*spendMult);
+
+  // Low press freedom consequences
+  if(m.pressFreedom<25) G.division=Math.min(100,G.division+0.3);
+
+  // Tick story cooldowns
+  for(const id of Object.keys(m.storyCooldowns)){
+    m.storyCooldowns[id]=Math.max(0,m.storyCooldowns[id]-1);
+    if(m.storyCooldowns[id]===0) delete m.storyCooldowns[id];
+  }
+}
+
+function runMediaStory(storyId){
+  const story=MEDIA_STORIES.find(s=>s.id===storyId);
+  if(!story) return;
+  const m=G.media;
+  const stanceOrder=STANCE_ORDER;
+  const stanceIdx=stanceOrder.indexOf(m.stance);
+  const minIdx=stanceOrder.indexOf(story.minStance);
+  if(stanceIdx<minIdx){showBreaking('STORY REQUIRES MORE PRESS CONTROL');return;}
+  if(m.storyCooldowns[storyId]){showBreaking(`STORY ON COOLDOWN — ${m.storyCooldowns[storyId]} MONTHS`);return;}
+
+  const isTrue=story.truthFn();
+  // Backfire chance — false stories risk exposure
+  const backfireChance=isTrue?0:{free:0.8,neutral:0.6,managed:0.35,partisan:0.15,propaganda:0.04}[m.stance]||0.5;
+  const caught=!isTrue&&Math.random()<backfireChance;
+
+  if(caught){
+    // Exposure — bad for everyone
+    applyDemUniform('mc',-8);applyDemUniform('u35',-6);
+    G.unity=clamp(G.unity-8,20,100);
+    G.division=Math.min(100,G.division+5);
+    m.storyCooldowns[storyId]=story.cooldown+2;
+    saveGame();
+    showBreaking(`STORY EXPOSED AS FALSE — PRESS CREDIBILITY COLLAPSES`);
+    renderMedia();
+    return;
+  }
+
+  // Apply effects
+  applyFx(story.fx,0);
+  if(story.seatsFx) G.seats=clamp(G.seats+story.seatsFx,150,550);
+  G.division=Math.min(100,G.division+story.divCost);
+  m.storyCooldowns[storyId]=story.cooldown;
+  recomputeDem();
+  saveGame();
+  showBreaking(story.headline);
+  renderMedia();
+}
+
 function computeIdeoMismatch(){
   const alignIdeol={hardLeft:-3,centreLeft:-1,centre:0,centreRight:1,hardRight:3};
   const playerIdeol=alignIdeol[G.alignKey]||0;
@@ -1099,16 +1804,34 @@ function computeIdeoMismatch(){
 }
 
 function applySocialPolicyEffects(){
-  const RATE=0.08;
+  // Pull each subfaction toward equilibrium target defined by current social policy.
+  // lean from the policy option makes ideologically-aligned subfactions respond more.
+  const RATE=0.06;
   for(const[key,val] of Object.entries(G.soc)){
     const polData=SOCIAL_POLICIES[key];
     if(!polData) continue;
     const opt=polData.opts[val];
     if(!opt||!opt.fx) continue;
-    for(const[dem,delta] of Object.entries(opt.fx)){
-      if(G.dem[dem]!==undefined) G.dem[dem]=clamp(G.dem[dem]+delta*RATE,5,95);
+    const lean=opt.lean||0;
+    for(const[grp,delta] of Object.entries(opt.fx)){
+      const g=grp==='biz'?'uc':grp;
+      if(!G.factions[g]) continue;
+      for(const sf of G.factions[g]){
+        const modifier=lean===0?1:1+(lean*sf.ideo/25)*0.35;
+        const effectiveDelta=delta*modifier;
+        const target=clamp(50+effectiveDelta,5,95);
+        const current=sf.approval;
+        if(effectiveDelta>0&&current>=target) continue;
+        if(effectiveDelta<0&&current<=target) continue;
+        // Uc bonuses dampened when corp tax is high
+        const rate=(g==='uc'&&delta>0&&G.pol.corp>30)?RATE*0.3:RATE;
+        const pull=(target-current)*rate;
+        const move=pull>=0?Math.max(1,Math.round(pull)):Math.min(-1,Math.round(pull));
+        sf.approval=clamp(sf.approval+move,5,95);
+      }
     }
   }
+  recomputeDem();
 }
 
 function generateHeadlines(){
@@ -1162,17 +1885,7 @@ function pickEvent(){
   return unused[Math.floor(Math.random()*unused.length)];
 }
 
-function applyEventChoice(fx){
-  for(const[k,v] of Object.entries(fx)){
-    if(G.dem[k]!==undefined) G.dem[k]=clamp(G.dem[k]+v,5,95);
-    else if(k==='deficit') G.deficit=rnd1(G.deficit+v);
-    else if(k==='debt') G.debt=rnd1(G.debt+v);
-    else if(k==='gdp') G.gdp=rnd1(clamp(G.gdp+v,-5,8));
-    else if(k==='inflation') G.inflation=rnd1(clamp(G.inflation+v,0,15));
-    else if(k==='unemp') G.unemp=rnd1(clamp(G.unemp+v,2,12));
-    else if(k==='unity') G.unity=clamp(G.unity+v,20,100);
-  }
-}
+function applyEventChoice(fx,lean=0){ applyFx(fx,lean); }
 
 function getCrisisStage(crisis,ac){
   const stage=crisis.stages[ac.stage];
@@ -1207,7 +1920,7 @@ function showBreaking(text){
 
 function showTab(tab){
   currentTab=tab;
-  ['brief','pol','cab','infra','stats'].forEach(t=>{
+  ['brief','pol','cab','infra','media','stats'].forEach(t=>{
     const el=document.getElementById(t+'-tab');
     const btn=document.getElementById('nb-'+t);
     if(el) el.style.display=(t===tab)?'block':'none';
@@ -1217,6 +1930,7 @@ function showTab(tab){
   if(tab==='cab')   renderCabinetTab();
   if(tab==='infra') renderInfraTab();
   if(tab==='stats') renderStatsTab();
+  if(tab==='media') renderMedia();
   if(tab==='brief') renderBriefing();
 }
 
@@ -1240,7 +1954,7 @@ function renderBriefing(){
     <div class="gauge" style="margin-top:6px"><div class="gf ${appr>50?'g':appr>30?'w':'d'}" style="width:${appr}%"></div></div>
   </div>`;
   left+=`<div class="sbox"><div class="sbox-t">Demographic Breakdown</div>`;
-  const demLabels={wc:'Working Class',mc:'Middle Class',pen:'Pensioners',u35:'Under 35',biz:'Business'};
+  const demLabels={wc:'Working Class',mc:'Middle Class',uc:'Upper Class',pen:'Pensioners',u35:'Under 35'};
   for(const[k,lbl] of Object.entries(demLabels)){
     const v=G.dem[k];
     left+=`<div class="sr"><span class="sl">${lbl}</span><span class="sv ${v>50?'up':v<30?'dn':'wa'}">${v}%</span></div>`;
@@ -1319,6 +2033,33 @@ function renderBriefing(){
   right+=`<div class="sr"><span class="sl">Unity</span><span class="sv ${G.unity>65?'up':G.unity<40?'dn':'wa'}">${G.unity}%</span></div>`;
   right+=`<div class="gauge"><div class="gf ${G.unity>65?'g':G.unity<40?'d':'w'}" style="width:${G.unity}%"></div></div>`;
   right+=`</div>`;
+
+  // Crime indicator
+  const crimeCol=G.crime<30?'#2a7a2a':G.crime>65?'var(--red)':'var(--gold)';
+  right+=`<div class="sbox"><div class="sbox-t">Public Safety</div>`;
+  right+=`<div class="sr"><span class="sl">Crime Index</span><span class="sv" style="color:${crimeCol}">${Math.round(G.crime)}/100</span></div>`;
+  right+=`<div class="gauge"><div class="gf" style="width:${G.crime}%;background:${crimeCol}"></div></div>`;
+  if(G.soc.crime==='rehab'&&G.rehabMonths>0&&G.rehabMonths<=6){
+    right+=`<div style="font-size:9px;font-style:italic;color:#c8a870;margin-top:3px">Rehab programme bedding in — ${6-G.rehabMonths} months until effect</div>`;
+  }
+  right+=`</div>`;
+
+  // Division indicator
+  const divCol=G.division<30?'#2a7a2a':G.division>65?'var(--red)':'var(--gold)';
+  right+=`<div class="sbox"><div class="sbox-t">Social Division</div>`;
+  right+=`<div class="sr"><span class="sl">Division Index</span><span class="sv" style="color:${divCol}">${Math.round(G.division)}/100</span></div>`;
+  right+=`<div class="gauge"><div class="gf" style="width:${G.division}%;background:${divCol}"></div></div>`;
+  if(G.division>65) right+=`<div style="font-size:9px;font-style:italic;color:#e05050;margin-top:3px">Extreme polarisation — assassination risk elevated</div>`;
+  else if(G.division>50) right+=`<div style="font-size:9px;font-style:italic;color:#c8a870;margin-top:3px">High division — voters moving to extremes</div>`;
+  right+=`</div>`;
+
+  // PM wounded notice
+  if(G.pmWounded){
+    right+=`<div style="background:var(--red);color:var(--paper);padding:6px 8px;margin-bottom:8px;font-size:11px">
+      <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px">Prime Minister's Status</div>
+      Recovering from injuries sustained in assassination attempt. Limited public appearances.
+    </div>`;
+  }
 
   // Infra snapshot
   if(G.infra.active.length>0){
@@ -1507,7 +2248,7 @@ function assignMpClick(mpId){
 }
 function fireMp(role){
   G.cab[role]=null;
-  Object.keys(G.dem).forEach(k=>{G.dem[k]=clamp(G.dem[k]-rand(1,3),5,95);});
+  for(const g of ['wc','mc','pen','u35','uc']) applyDemUniform(g,-Math.round(rand(1,3))); recomputeDem();
   renderCabinetTab();
 }
 
@@ -1615,6 +2356,88 @@ function commissionProject(projId){
 }
 
 // ── STATS TAB ─────────────────────────────────────────────────
+function renderMedia(){
+  if(!G) return;
+  const m=G.media;
+  const alignIdeol={hardLeft:-3,centreLeft:-1.5,centre:0,centreRight:1.5,hardRight:3};
+  const playerLean=alignIdeol[G.alignKey]||0;
+  const pfCol=m.pressFreedom>60?'#2a7a2a':m.pressFreedom>30?'var(--gold)':'var(--red)';
+  const pfLabel=m.pressFreedom>70?'Free':m.pressFreedom>50?'Constrained':m.pressFreedom>30?'Restricted':'Suppressed';
+
+  let html=`<div class="sec-hdr">Media Control</div>`;
+  // Press freedom bar
+  html+=`<div class="sbox" style="margin-bottom:10px">
+    <div class="sbox-t">Press Freedom Index</div>
+    <div class="sr"><span class="sl">Status</span><span class="sv" style="color:${pfCol}">${pfLabel} — ${Math.round(m.pressFreedom)}%</span></div>
+    <div class="gauge"><div class="gf" style="width:${m.pressFreedom}%;background:${pfCol}"></div></div>
+    ${m.pressFreedom<30?`<div style="font-size:9px;font-style:italic;color:var(--red);margin-top:3px">International condemnation. Division accelerating. Journalist arrest risk.</div>`
+      :m.pressFreedom<55?`<div style="font-size:9px;font-style:italic;color:#c8a870;margin-top:3px">Press freedom concerns mounting. Opposition and media critics vocal.</div>`:''}
+  </div>`;
+
+  // Media spend slider
+  html+=`<div class="sbox" style="margin-bottom:10px">
+    <div class="sbox-t">Media Budget — ${m.spend}% of spending <span style="font-size:9px;color:#8c7a5a">(higher spend amplifies all effects)</span></div>
+    <input type="range" min="0" max="10" value="${m.spend}" step="1"
+      style="width:100%;margin:6px 0;accent-color:var(--gold)"
+      oninput="G.media.spend=+this.value;saveGame();renderMedia()">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#8c7a5a"><span>0% — No budget</span><span>10% — Full operation</span></div>
+  </div>`;
+
+  // Stance selector
+  html+=`<div class="sec-hdr" style="margin-top:16px">Editorial Stance</div>`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:14px">`;
+  for(const key of STANCE_ORDER){
+    const s=MEDIA_STANCES[key];
+    const active=m.stance===key;
+    html+=`<div onclick="setMediaStance('${key}')" style="cursor:pointer;padding:7px 5px;text-align:center;border:1px solid ${active?'var(--gold)':'#3a2a14'};background:${active?'#2a1a05':'var(--paper)'};border-radius:2px">
+      <div style="font-size:10px;font-weight:${active?'bold':'normal'};color:${active?'var(--gold)':'var(--ink)'};letter-spacing:.04em">${s.label}</div>
+      ${s.divMod>0?`<div style="font-size:8px;color:#e05050;margin-top:2px">÷ +${s.divMod}/mo</div>`:`<div style="font-size:8px;color:#2a7a2a;margin-top:2px">No division</div>`}
+    </div>`;
+  }
+  html+=`</div>`;
+  // Stance description
+  html+=`<div style="font-size:11px;font-style:italic;color:#8c7a5a;margin-bottom:14px;padding:6px 8px;border-left:2px solid var(--gold)">${MEDIA_STANCES[m.stance].desc}</div>`;
+
+  // Stories
+  html+=`<div class="sec-hdr">Run a Story</div>`;
+  const stanceIdx=STANCE_ORDER.indexOf(m.stance);
+
+  for(const cat of ['pro','attack']){
+    const catStories=MEDIA_STORIES.filter(s=>s.cat===cat);
+    html+=`<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8c7a5a;margin:10px 0 5px">${cat==='pro'?'Pro-Government':'Opposition Attack'}</div>`;
+    for(const story of catStories){
+      const minIdx=STANCE_ORDER.indexOf(story.minStance);
+      const locked=stanceIdx<minIdx;
+      const cooldown=m.storyCooldowns[story.id]||0;
+      const onCooldown=cooldown>0;
+      const isTrue=story.truthFn();
+      const truthLabel=isTrue?'<span style="color:#2a7a2a">✓ True</span>':'<span style="color:#c8a870">⚠ Questionable</span>';
+      const backfirePct={free:80,neutral:60,managed:35,partisan:15,propaganda:4}[m.stance]||50;
+      html+=`<div style="border:1px solid #3a2a14;padding:8px 10px;margin-bottom:5px;background:${locked||onCooldown?'#1a1208':'var(--paper)'}">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div style="font-size:11px;font-weight:bold;color:${locked?'#5a4a34':onCooldown?'#7a6a54':'var(--ink)'}">${story.label}</div>
+          <div style="font-size:9px;color:#8c7a5a">${locked?`🔒 Requires ${MEDIA_STANCES[story.minStance].label}`:onCooldown?`⏳ ${cooldown} months`:truthLabel}</div>
+        </div>
+        <div style="font-size:10px;color:#8c7a5a;margin:3px 0">${story.desc}</div>
+        ${!locked&&!onCooldown?`<div style="font-size:9px;margin-top:4px">
+          <span style="color:#c8a870">Division +${story.divCost}</span>
+          ${!isTrue?`<span style="color:#e05050;margin-left:8px">Backfire risk: ${backfirePct}%</span>`:''}
+        </div>`:''}
+        ${!locked&&!onCooldown?`<button class="bigbtn" style="margin-top:6px;padding:5px 12px;font-size:10px;max-width:none;width:100%" onclick="runMediaStory('${story.id}')">Publish</button>`:''}
+      </div>`;
+    }
+  }
+
+  document.getElementById('media-tab').innerHTML=html;
+}
+
+function setMediaStance(key){
+  if(!G) return;
+  G.media.stance=key;
+  saveGame();
+  renderMedia();
+}
+
 function renderStatsTab(){
   const appr=getApproval();
   let html=`<div class="sec-hdr">Full Statistical Report — ${MONTHS[G.month]} ${G.year} (Turn ${G.turn})</div><div class="stats-grid">`;
@@ -1628,13 +2451,15 @@ function renderStatsTab(){
     {t:'Parliamentary Seats',v:`${G.seats}`,s:`Majority at 326 · ${G.seats>325?'Government majority':'Minority government'}`,c:G.seats>325?'#2a7a2a':'var(--red)'},
     {t:'Party Unity',v:`${G.unity}%`,s:G.unity>65?'Broadly disciplined':G.unity>40?'Restless backbenches':'Open revolt',c:G.unity>65?'#2a7a2a':G.unity<40?'var(--red)':'var(--gold)'},
     {t:'NHS Total',v:`${getNHSSpend()}%`,s:`Staff:${G.pol.nhsStaff} Capital:${G.pol.nhsCapital} Care:${G.pol.socialCare}`,c:getNHSSpend()<18?'var(--red)':getNHSSpend()>28?'#2a7a2a':'var(--gold)'},
+    {t:'Crime Level',v:`${Math.round(G.crime)}`,s:G.crime<25?'Low — public feels safe':G.crime<50?'Moderate':G.crime<70?'High — affecting approval':'Very high — crisis territory',c:G.crime<30?'#2a7a2a':G.crime>65?'var(--red)':'var(--gold)'},
+    {t:'Social Division',v:`${Math.round(G.division)}`,s:G.division<30?'Low — society broadly cohesive':G.division<50?'Moderate':G.division<70?'High — voters moving to extremes':'Extreme — polarisation crisis',c:G.division<35?'#2a7a2a':G.division>65?'var(--red)':'var(--gold)'},
   ];
   cards.forEach(c=>{
     html+=`<div class="stat-card"><div class="stat-card-title">${c.t}</div><div class="stat-big" style="color:${c.c}">${c.v}</div><div class="stat-sub">${c.s}</div></div>`;
   });
   html+=`</div>`;
   html+=`<div style="margin-top:22px"><div class="sec-hdr">Demographic Breakdown</div>`;
-  const demLabels={wc:'Working Class',mc:'Middle Class',pen:'Pensioners',u35:'Under 35s',biz:'Business Community'};
+  const demLabels={wc:'Working Class',mc:'Middle Class',uc:'Upper Class',pen:'Pensioners',u35:'Under 35s'};
   for(const[k,lbl] of Object.entries(demLabels)){
     const v=G.dem[k];
     html+=`<div class="dem-row"><span class="dem-lbl">${lbl}</span>
@@ -1739,7 +2564,7 @@ function endMonth(){
   // Check active crises needing next stage
   for(const ac of G.activeCrises){
     ac.turnsAtStage=(ac.turnsAtStage||0)+1;
-    if(ac.turnsAtStage>=1){ // advance every month
+    if(ac.turnsAtStage>=1){
       return showCrisisEvent(ac.id,ac);
     }
   }
@@ -1750,12 +2575,35 @@ function endMonth(){
   if(G.gdp<-4) return showGameOver('economic');
   if(G.turn>60||G.electionCalled) return triggerElection(false);
 
-  // Try triggering a new crisis first (~40% after turn 3)
+  // Assassination stage 2 — fires the month after the threat was presented
+  if(G.assassination.state==='pending'){
+    return resolveAssassination();
+  }
+
+  // Assassination trigger — crime>65 OR division>65, approval<30, once per term
+  if(G.turn>6&&appr<30&&!G.assassination.firedThisTerm&&!G.assassination.state){
+    if(G.crime>65||G.division>65){
+      G.assassination.state='threat';
+      G.assassination.trigger=G.division>65&&G.crime<=65?'division':G.crime>65&&G.division<=65?'crime':'both';
+      return showAssassinationThreat();
+    }
+  }
+
+  // Try triggering a new crisis (~40% after turn 3)
   if(G.turn>3&&G.activeCrises.length===0){
     const triggeredCrisisId=pickNextCrisisTrigger();
     if(triggeredCrisisId){
       G.activeCrises.push({id:triggeredCrisisId,stage:0,history:[],turnsAtStage:0});
       return showCrisisEvent(triggeredCrisisId,G.activeCrises[G.activeCrises.length-1]);
+    }
+  }
+
+  // Crime event (~25% if crime above threshold, check before generic events)
+  if(G.turn>2&&Math.random()<0.25){
+    const eligible=CRIME_EVENTS.filter(e=>G.crime>=e.minCrime&&!G.eventHistory.includes(e.id));
+    if(eligible.length>0){
+      G.pendingEvent=eligible[Math.floor(Math.random()*eligible.length)];
+      return showEvent(G.pendingEvent);
     }
   }
 
@@ -1765,6 +2613,128 @@ function endMonth(){
     return showEvent(G.pendingEvent);
   }
   showTab('brief');
+}
+
+function showAssassinationThreat(){
+  G.assassination.firedThisTerm=true;
+  const triggerStory={
+    crime:`MI5 has assessed a credible and specific threat against the Prime Minister's life. The threat arises from the current climate of high crime and civil disorder. The Security Service recommends a full review of protective arrangements. This briefing does not leave this room.`,
+    division:`MI5 has assessed a credible and specific threat against the Prime Minister's life. The threat arises from extreme political polarisation — fringe actors radicalised by the current climate. The Security Service recommends a full review of protective arrangements. This briefing does not leave this room.`,
+    both:`MI5 has assessed a credible and specific threat against the Prime Minister's life. High crime and extreme polarisation have combined to create the highest assessed risk level in a decade. The Security Service is alarmed. This briefing does not leave this room.`,
+  }[G.assassination.trigger||'crime'];
+  document.getElementById('ev-nav').innerHTML=`
+    <div style="flex:0 0 auto;padding:9px 14px;background:#1a120a;color:#e05050;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-right:1px solid #3a2010">⚠ SECURITY ALERT</div>
+    <div style="flex:1;background:var(--ink);display:flex;align-items:center;justify-content:center;color:#c8a870;font-size:10px;letter-spacing:.2em;text-transform:uppercase">Classified — Eyes Only</div>`;
+  const html=`<div class="ev-tag" style="background:#1a120a">Security Services</div>
+    <div class="ev-hl">SECURITY SERVICES REPORT CREDIBLE THREAT TO PRIME MINISTER</div>
+    <div class="byline">Classified briefing — restricted circulation · ${MONTHS[G.month]} ${G.year}</div>
+    <div class="ev-article">${triggerStory}</div>
+    <div class="ev-choices-lbl">Your response?</div>
+    <div class="ev-choice" onclick="chooseAssassinationThreat('secure')">
+      <div class="ev-choice-lbl">Increase security immediately</div>
+      <div class="ev-choice-desc">Full protective review, extra armed officers, reduced public appearances. Costs £0.5bn. Looks decisive.</div></div>
+    <div class="ev-choice" onclick="chooseAssassinationThreat('dismiss')">
+      <div class="ev-choice-lbl">Dismiss the threat</div>
+      <div class="ev-choice-desc">"The British public will not be intimidated." Continue normal schedule.</div></div>`;
+  document.getElementById('ev-inner').innerHTML=html;
+  showScreen('event-screen');
+}
+
+function chooseAssassinationThreat(choice){
+  G.assassination.threatChoice=choice;
+  G.assassination.state='pending';
+  if(choice==='secure'){
+    G.deficit=rnd1(G.deficit+0.5);
+    for(const g of ['wc','mc','pen','u35','uc']) applyDemUniform(g,2); recomputeDem();
+    showBreaking('PM INCREASES SECURITY FOLLOWING CLASSIFIED BRIEFING');
+  } else {
+    showBreaking('PM DISMISSES SECURITY CONCERNS — "NO CREDIBLE THREAT TO PUBLIC"');
+  }
+  saveGame();
+  showScreen('game-screen');
+  showTab('brief');
+}
+
+function resolveAssassination(){
+  const secured=G.assassination.threatChoice==='secure';
+  const crimeRisk=clamp((G.crime-65)/35,0,1);
+  const divRisk=clamp((G.division-65)/35,0,1);
+  const totalRisk=Math.max(crimeRisk,divRisk)+(crimeRisk+divRisk)*0.3; // both active is worse
+  let foiledW=secured?85:50;
+  let woundedW=secured?12:30;
+  let fatalW  =secured?3:20;
+  foiledW -=totalRisk*22;
+  woundedW+=totalRisk*8;
+  fatalW  +=totalRisk*14;
+  const roll=Math.random()*100;
+  let outcome;
+  if(roll<foiledW) outcome='foiled';
+  else if(roll<foiledW+woundedW) outcome='wounded';
+  else outcome='fatal';
+
+  G.assassination.state='resolved';
+  G.assassination.outcome=outcome;
+
+  if(outcome==='foiled'){
+    // Rally round the flag
+    for(const g of ['wc','mc','pen','u35','uc']) applyDemUniform(g,8); recomputeDem();
+    G.unity=clamp(G.unity+10,20,100);
+    G.crime=rnd1(clamp(G.crime-6,0,100));
+    showAssassinationOutcome('foiled');
+  } else if(outcome==='wounded'){
+    for(const g of ['wc','mc','pen','u35','uc']) applyDemUniform(g,-8); recomputeDem();
+    G.unity=clamp(G.unity-6,20,100);
+    G.pmWounded=true;
+    showAssassinationOutcome('wounded');
+  } else {
+    showAssassinationFatal();
+  }
+}
+
+function showAssassinationOutcome(outcome){
+  const foiled=outcome==='foiled';
+  document.getElementById('ev-nav').innerHTML=`
+    <div style="flex:1;background:${foiled?'#1a4a1a':'#4a1a1a'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;letter-spacing:.2em;text-transform:uppercase">${foiled?'Attempt Foiled':'Prime Minister Wounded'}</div>`;
+  const html=foiled?`
+    <div class="ev-tag" style="background:#1a4a1a">Security Success</div>
+    <div class="ev-hl">ASSASSINATION ATTEMPT FOILED — PM UNHARMED</div>
+    <div class="byline">Special Edition · ${MONTHS[G.month]} ${G.year}</div>
+    <div class="ev-article">Armed officers intercepted an assailant near the Prime Minister's motorcade this morning. The Prime Minister was unharmed. Security services are being praised for their vigilance. The nation has rallied. Polling shows a significant approval surge. The Chancellor described the PM as "shaken but resolute." The PM described themselves as "absolutely fine," which is what everyone says.</div>
+    <div class="ev-choice" onclick="showScreen('game-screen');showTab('brief')"><div class="ev-choice-lbl">Continue →</div></div>`
+  :`<div class="ev-tag" style="background:#4a1a1a">Breaking News</div>
+    <div class="ev-hl">PM WOUNDED IN ATTACK — STABLE CONDITION</div>
+    <div class="byline">Special Edition · ${MONTHS[G.month]} ${G.year}</div>
+    <div class="ev-article">The Prime Minister sustained injuries in an attack this morning. They are described as stable and are receiving treatment. Cabinet has convened in emergency session. The Deputy PM has assumed temporary duties. The incident has shocked Westminster. It has not improved the polling.</div>
+    <div class="ev-choice" onclick="showScreen('game-screen');showTab('brief')"><div class="ev-choice-lbl">Continue →</div></div>`;
+  document.getElementById('ev-inner').innerHTML=html;
+  showScreen('event-screen');
+  saveGame();
+}
+
+function showAssassinationFatal(){
+  localStorage.removeItem('numtenSave');
+  document.getElementById('go-inner').innerHTML=`
+    <div style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;text-align:center;border-bottom:2px solid var(--ink);border-top:2px solid var(--ink);padding:3px 0;margin-bottom:12px">The Westminster Gazette — Special Edition</div>
+    <div style="font-family:'Playfair Display',serif;font-size:64px;font-weight:900;line-height:1;text-align:center;color:var(--ink);margin:10px 0">†</div>
+    <div class="el-title" style="font-size:38px;color:var(--ink)">PRIME MINISTER DEAD</div>
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;text-align:center;color:#5a4020;margin:8px 0 20px">${G.leaderName}, ${G.partyName} · Served ${G.turn-1} months</div>
+    <hr class="ruled" style="max-width:500px;margin:0 auto 18px">
+    <div class="btext" style="font-size:14px;max-width:560px;margin:0 auto 20px;text-align:justify">
+      ${G.leaderName} was assassinated this morning. The attack came amid a period of significant public unrest, with crime at its highest level in years and the government's approval rating severely diminished. Security services had assessed the threat level as elevated. It was not elevated enough.
+      <br><br>
+      Parliament has been suspended. The Leader of the Opposition expressed condolences and called for an inquiry. The nation has been asked to remain calm. The pigeons outside Number Ten are still there.
+    </div>
+    <hr class="ruled" style="max-width:500px;margin:0 auto 18px">
+    <div class="stats-grid" style="max-width:460px;margin:0 auto 20px;grid-template-columns:repeat(2,1fr)">
+      <div class="stat-card"><div class="stat-card-title">Final Approval</div><div class="stat-big">${getApproval()}%</div></div>
+      <div class="stat-card"><div class="stat-card-title">Months in Office</div><div class="stat-big">${G.turn-1}</div></div>
+      <div class="stat-card"><div class="stat-card-title">Crime Level</div><div class="stat-big" style="color:var(--red)">${Math.round(G.crime)}</div></div>
+      <div class="stat-card"><div class="stat-card-title">Division Index</div><div class="stat-big" style="color:var(--red)">${Math.round(G.division)}</div></div>
+      <div class="stat-card"><div class="stat-card-title">Trigger</div><div class="stat-big" style="font-size:14px">${{crime:'High Crime',division:'Polarisation',both:'Both'}[G.assassination.trigger||'crime']}</div></div>
+      <div class="stat-card"><div class="stat-card-title">Security Choice</div><div class="stat-big" style="font-size:14px">${G.assassination.threatChoice==='dismiss'?'Dismissed threat':'Took precautions'}</div></div>
+    </div>
+    <button class="bigbtn" style="max-width:400px;margin:0 auto" onclick="resetGame()">New Game</button>`;
+  showScreen('gameover-screen');
 }
 
 function resetGame(){
@@ -1810,6 +2780,11 @@ function triggerElection(isSnap){
   }</div>`;
   if(won){
     G.seats=newSeats;G.turn=1;G.electionCalled=false;G.activeCrises=[];
+    G.assassination={state:null,firedThisTerm:false};G.pmWounded=false;
+    // Division carries over partially — elections reduce tension somewhat but don't reset it
+    G.division=Math.max(20,G.division*0.65);
+    // Faction weights reset to defaults — election reshuffles the coalition
+    G.factions=null;sanitizeState();
     html+=`<button class="bigbtn" style="max-width:400px;margin:14px auto" onclick="continueAfterElection()">Begin New Term →</button>
     <button class="bigbtn" style="max-width:400px;margin:4px auto;background:#5a4020" onclick="resetGame()">New Game</button>`;
   } else {
@@ -1868,7 +2843,7 @@ function selectAlign(key){
 
 function renderPreview(key){
   const s=ALIGNMENTS[key].s;
-  const appr=Math.round(.25*s.dem.wc+.30*s.dem.mc+.20*s.dem.pen+.15*s.dem.u35+.10*s.dem.biz);
+  const appr=Math.round(.25*s.dem.wc+.30*s.dem.mc+.20*s.dem.pen+.15*s.dem.u35+.10*(s.dem.uc||s.dem.biz||50));
   const items=[{n:appr+'%',l:'Approval'},{n:s.inflation+'%',l:'Inflation'},{n:s.seats,l:'Seats'},{n:s.debt+'%',l:'Debt/GDP'},{n:s.ir+'%',l:'Int. Rate'}];
   document.getElementById('prev-content').innerHTML=items.map(i=>`<div class="prev-item"><div class="prev-num">${i.n}</div><div class="prev-lbl">${i.l}</div></div>`).join('');
 }
@@ -1906,6 +2881,13 @@ function sanitizeState(){
   if(!G.infra) G.infra={active:[],completed:[]};
   if(!G.infraBonuses) G.infraBonuses={};
   if(!G.consequenceCooldowns) G.consequenceCooldowns={};
+  if(typeof G.crime!=='number') G.crime=42;
+  if(typeof G.rehabMonths!=='number') G.rehabMonths=0;
+  if(typeof G.division!=='number') G.division=20;
+  if(!G.media) G.media={stance:'neutral',spend:3,pressFreedom:80,storyCooldowns:{}};
+  if(!G.media.storyCooldowns) G.media.storyCooldowns={};
+  if(!G.assassination) G.assassination={state:null,firedThisTerm:false};
+  if(G.pmWounded===undefined) G.pmWounded=false;
   if(!G.soc) G.soc={immigration:'points',housing:'status',nhs:'status',crime:'police',env:'gradual',edu:'acad',energy:'regulated',trade:'bilateral',transport:'status',drugs:'status'};
   // Migrate old single pol sliders
   if(!G.pol) G.pol={};
@@ -1920,7 +2902,21 @@ function sanitizeState(){
   const defs={ir:5,itBasic:20,itHigher:40,corp:25,vat:20,ni:13,nhsStaff:12,nhsCapital:6,socialCare:4,jsa:7,housingBen:5,disability:5,childBen:3,educ:16,def:14,hous:8,infraSpend:8,police:5,foreignAid:1,arts:1};
   for(const[k,v] of Object.entries(defs)){if(p[k]===undefined) p[k]=v;}
   if(!G.cab) G.cab={chancellor:null,home:null,health:null,foreign:null,education:null,whip:null};
-  ['wc','mc','pen','u35','biz'].forEach(k=>{if(G.dem[k]===undefined) G.dem[k]=45;});
+  // Migrate biz->uc in dem
+  if(G.dem.biz!==undefined&&G.dem.uc===undefined){G.dem.uc=G.dem.biz;delete G.dem.biz;}
+  ['wc','mc','pen','u35','uc'].forEach(k=>{if(G.dem[k]===undefined) G.dem[k]=45;});
+  // Rebuild factions if missing (new saves or migrated saves)
+  if(!G.factions){
+    G.factions={};
+    for(const[grp,defs] of Object.entries(FACTIONS_DEF)){
+      G.factions[grp]=defs.map(d=>({id:d.id,ideo:d.ideo,w:d.w,approval:G.dem[grp]||45}));
+    }
+  }
+  // Ensure all subfactions exist
+  for(const[grp,defs] of Object.entries(FACTIONS_DEF)){
+    if(!G.factions[grp]) G.factions[grp]=defs.map(d=>({id:d.id,ideo:d.ideo,w:d.w,approval:G.dem[grp]||45}));
+    G.factions[grp].forEach((sf,i)=>{if(sf.ideo===undefined) sf.ideo=defs[i].ideo;});
+  }
   if(typeof G.seats!=='number') G.seats=338;
   if(typeof G.unity!=='number') G.unity=70;
   if(typeof G.turn!=='number') G.turn=1;
