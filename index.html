@@ -1335,7 +1335,7 @@ function freshState(leaderName,partyName,alignKey){
   // Build factions from FACTIONS_DEF + alignment starting approvals
   const factions={};
   for(const[grp,defs] of Object.entries(FACTIONS_DEF)){
-    const apArr=a.fac[grp];
+    const apArr=s.fac[grp];
     factions[grp]=defs.map((d,i)=>({id:d.id,ideo:d.ideo,w:d.w,approval:apArr[i]}));
   }
   const dem=recomputeDemFrom(factions);
