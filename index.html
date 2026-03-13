@@ -2580,9 +2580,14 @@ function endMonth(){
     return resolveAssassination();
   }
 
-  // Assassination trigger — crime>65 OR division>65, approval<30, once per term
-  if(G.turn>6&&appr<30&&!G.assassination.firedThisTerm&&!G.assassination.state){
-    if(G.crime>65||G.division>65){
+  // Assassination trigger — once per term, turn>6
+  // At high division, extremists act regardless of aggregate approval — threshold rises with polarisation
+  const assasApprThreshold = G.division > 80 ? 60
+                            : G.division > 65 ? 45
+                            : G.division > 50 ? 35
+                            : 30;
+  if(G.turn>6&&appr<assasApprThreshold&&!G.assassination.firedThisTerm&&!G.assassination.state){
+    if(G.crime>65||G.division>50){
       G.assassination.state='threat';
       G.assassination.trigger=G.division>65&&G.crime<=65?'division':G.crime>65&&G.division<=65?'crime':'both';
       return showAssassinationThreat();
